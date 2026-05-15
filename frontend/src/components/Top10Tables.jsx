@@ -3,7 +3,7 @@ import { BED_TYPES } from "../config/constants";
 import { styles } from "../styles";
 
 export default function Top10Tables({ rentals }) {
-  const [activeBed, setActiveBed] = useState("threeBedHouse");
+  const [activeBed, setActiveBed] = useState("twoBedFlat");
 
   const valid = rentals
     .filter((r) => r[activeBed] != null && r[activeBed] !== 0)

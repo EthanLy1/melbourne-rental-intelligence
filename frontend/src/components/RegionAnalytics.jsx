@@ -5,7 +5,7 @@ import { parseValue, formatPrice } from "../utils/helpers";
 import { styles } from "../styles";
 
 export default function RegionAnalytics({ rentals }) {
-  const [activeBed, setActiveBed] = useState("threeBedHouse");
+  const [activeBed, setActiveBed] = useState("twoBedFlat");
 
   const regionAverages = useMemo(() => {
     const regionMap = {};

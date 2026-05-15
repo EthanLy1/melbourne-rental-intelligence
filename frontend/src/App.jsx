@@ -27,7 +27,7 @@ export default function App() {
   const [region, setRegion] = useState("All");
   const [sortKey, setSortKey] = useState("Suburb");
   const [sortDir, setSortDir] = useState("asc");
-  const [activeBedType, setActiveBedType] = useState("fourBedHouse");
+  const [activeBedType, setActiveBedType] = useState("twoBedFlat");
   const [chartBedTypes, setChartBedTypes] = useState(BED_TYPES.map((b) => b.key));
   const [activeSection, setActiveSection] = useState("insights");
 

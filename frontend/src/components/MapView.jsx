@@ -14,26 +14,17 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
-function MapController({ filteredSuburbs, showAll }) {
+function MapController({ showAll }) {
   const map = useMap();
   
   useEffect(() => {
-    if (filteredSuburbs.length > 0) {
-      if (showAll) {
-        map.fitBounds([
-          [-38.5, 144.5],
-          [-37.5, 145.5]
-        ], { padding: [50, 50] });
-      } else {
-        const bounds = L.latLngBounds(
-          filteredSuburbs.map(s => [s.lat, s.lng])
-        );
-        if (bounds.isValid()) {
-          map.fitBounds(bounds, { padding: [50, 50] });
-        }
-      }
+    if (showAll) {
+      map.fitBounds([
+        [-38.5, 144.5],
+        [-37.5, 145.5]
+      ], { padding: [50, 50] });
     }
-  }, [filteredSuburbs, map, showAll]);
+  }, [showAll, map]);
 
   return null;
 }
@@ -145,7 +136,7 @@ export default function MapView({ rentals, activeBedType, search, region, onBedT
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             
-            <MapController filteredSuburbs={suburbsWithCoords} showAll={showAllSuburbs} />
+            <MapController showAll={showAllSuburbs} />
             
             {suburbsWithCoords.map((suburb) => (
               <Marker
