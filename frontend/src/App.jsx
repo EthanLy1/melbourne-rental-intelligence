@@ -10,6 +10,21 @@ import RegionAnalytics from "./components/RegionAnalytics";
 import AdditionalCharts from "./components/AdditionalCharts";
 import Top10Tables from "./components/Top10Tables";
 
+// debounce function to improve search bar performance
+function useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  
+  return debouncedValue;
+}
+
 // navigation header
 const NAV_ITEMS = [
   { id: "map", label: "Map", icon: "🗺️" },
@@ -30,6 +45,8 @@ export default function App() {
   const [activeBedType, setActiveBedType] = useState("twoBedFlat");
   const [chartBedTypes, setChartBedTypes] = useState(BED_TYPES.map((b) => b.key));
   const [activeSection, setActiveSection] = useState("insights");
+
+const debouncedSearch = useDebounce(search, 300); // Add this line
 
   // update active section based on scroll
   useEffect(() => {
@@ -69,21 +86,21 @@ export default function App() {
     return ["All", ...new Set(rentals.map((r) => r.Region).filter(Boolean))];
   }, [rentals]);
 
-  const filteredRentals = useMemo(() => {
-    const searchLower = search.toLowerCase();
-    const filtered = rentals.filter((rental) => {
-      const suburbMatch = (rental.Suburb || "").toLowerCase().includes(searchLower);
-      const regionMatch = region === "All" || rental.Region === region;
-      return suburbMatch && regionMatch;
-    });
-    return [...filtered].sort((a, b) => {
-      const aVal = sortKey === "Suburb" ? (a.Suburb || "") : (a[sortKey] ?? -Infinity);
-      const bVal = sortKey === "Suburb" ? (b.Suburb || "") : (b[sortKey] ?? -Infinity);
-      if (aVal < bVal) return sortDir === "asc" ? -1 : 1;
-      if (aVal > bVal) return sortDir === "asc" ? 1 : -1;
-      return 0;
-    });
-  }, [rentals, search, region, sortKey, sortDir]);
+ const filteredRentals = useMemo(() => {
+  const searchLower = debouncedSearch.toLowerCase(); // Changed from search to debouncedSearch
+  const filtered = rentals.filter((rental) => {
+    const suburbMatch = (rental.Suburb || "").toLowerCase().includes(searchLower);
+    const regionMatch = region === "All" || rental.Region === region;
+    return suburbMatch && regionMatch;
+  });
+  return [...filtered].sort((a, b) => {
+    const aVal = sortKey === "Suburb" ? (a.Suburb || "") : (a[sortKey] ?? -Infinity);
+    const bVal = sortKey === "Suburb" ? (b.Suburb || "") : (b[sortKey] ?? -Infinity);
+    if (aVal < bVal) return sortDir === "asc" ? -1 : 1;
+    if (aVal > bVal) return sortDir === "asc" ? 1 : -1;
+    return 0;
+  });
+}, [rentals, debouncedSearch, region, sortKey, sortDir]); // Changed search to debouncedSearch
 
   const stats = useMemo(() => {
     const valid = filteredRentals.filter((r) => r[activeBedType] != null && r[activeBedType] !== 0);
@@ -118,6 +135,7 @@ export default function App() {
         <div style={{
           padding: "20px 24px 12px 24px",
           borderBottom: "1px solid rgba(255,255,255,0.1)",
+          textAlign: "center", 
         }}>
           <h1 style={{
             margin: 0,
@@ -125,6 +143,7 @@ export default function App() {
             fontWeight: 600,
             letterSpacing: "-0.5px",
             color: "white",
+            textAlign: "center", 
           }}>
             Melbourne Rental Intelligence
           </h1>
@@ -133,6 +152,7 @@ export default function App() {
             fontSize: 13,
             opacity: 0.7,
             color: "rgba(255,255,255,0.8)",
+            textAlign: "center", 
           }}>
             Comprehensive rental market analytics for Melbourne metropolitan area
           </p>
@@ -144,6 +164,7 @@ export default function App() {
           gap: 4,
           overflowX: "auto",
           scrollbarWidth: "thin",
+          justifyContent: "center", 
         }}>
           {NAV_ITEMS.map((item) => (
             <button
@@ -193,7 +214,7 @@ export default function App() {
           <MapView 
           rentals={rentals} 
           activeBedType={activeBedType} 
-          search={search} 
+          search={debouncedSearch} 
           region={region} 
           onBedTypeChange={setActiveBedType}
           />
