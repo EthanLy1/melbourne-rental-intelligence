@@ -38,12 +38,12 @@ function MapController({ filteredSuburbs, showAll }) {
   return null;
 }
 
-export default function MapView({ rentals, activeBedType, search, region }) {
+export default function MapView({ rentals, activeBedType, search, region, onBedTypeChange }) {
   const [hoveredSuburb, setHoveredSuburb] = useState(null);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [showAllSuburbs, setShowAllSuburbs] = useState(false);
 
-  // Calculate percentile ranges for the active bed type
+  // calculate percentile ranges for the active property type
   const percentileRanges = useMemo(() => {
     const validPrices = rentals
       .filter(r => r[activeBedType] != null && r[activeBedType] !== 0)
@@ -77,6 +77,23 @@ export default function MapView({ rentals, activeBedType, search, region }) {
   return (
     <div style={{ marginBottom: 40 }}>
       <h2 style={styles.subheading}>🗺️ Melbourne Rental Map</h2>
+
+      {/* property type filter */}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 20 }}>
+  <span style={styles.label}>View prices for:</span>
+  {BED_TYPES.map(({ key, label }) => (
+    <button 
+      key={key} 
+      onClick={() => onBedTypeChange?.(key)} 
+      style={{ 
+        ...styles.button, 
+        ...(activeBedType === key ? styles.activeButton : {}) 
+      }}
+    >
+      {label}
+    </button>
+  ))}
+</div>
       
       <div style={styles.card}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 16 }}>

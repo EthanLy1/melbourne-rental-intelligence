@@ -106,7 +106,7 @@ export default function App() {
   return (
     <div style={{ background: "#f5f5f5", minHeight: "100vh", color: "#333" }}>
       
-      {/* FULL-WIDTH STICKY HEADER - Dark background, white text (this is fine) */}
+      {/* sticky header */}
       <div style={{
         position: "sticky",
         top: 0,
@@ -183,35 +183,20 @@ export default function App() {
           marginBottom: 32,
           padding: "4px",
         }}>
-          <span style={{ fontSize: 13, fontWeight: 500, color: "#555", marginRight: 8, alignSelf: "center" }}>
-            View prices for:
-          </span>
-          {BED_TYPES.map(({ key, label }) => (
-            <button
-              key={key}
-              onClick={() => setActiveBedType(key)}
-              style={{
-                padding: "8px 20px",
-                borderRadius: 100,
-                border: activeBedType === key ? "none" : "1px solid #ddd",
-                background: activeBedType === key ? "#667eea" : "white",
-                color: activeBedType === key ? "white" : "#333",
-                fontSize: 13,
-                fontWeight: activeBedType === key ? 600 : 400,
-                cursor: "pointer",
-                transition: "all 0.2s",
-              }}
-            >
-              {label}
-            </button>
-          ))}
+          <span style={{ fontSize: 13, fontWeight: 500, color: "#555", marginRight: 8, alignSelf: "center" }}> </span>
+         
         </div>
 
 
         {/* sections/order */}
-        
         <section id="map" style={{ marginBottom: 48, scrollMarginTop: 110 }}>
-          <MapView rentals={rentals} activeBedType={activeBedType} search={search} region={region} />
+          <MapView 
+          rentals={rentals} 
+          activeBedType={activeBedType} 
+          search={search} 
+          region={region} 
+          onBedTypeChange={setActiveBedType}
+          />
         </section>
 
         {/* map summary cards */}
