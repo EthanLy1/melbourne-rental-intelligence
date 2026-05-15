@@ -87,21 +87,21 @@ export default function App() {
     return ["All", ...new Set(rentals.map((r) => r.Region).filter(Boolean))];
   }, [rentals]);
 
- const filteredRentals = useMemo(() => {
-  const searchLower = debouncedSearch.toLowerCase(); 
-  const filtered = rentals.filter((rental) => {
-    const suburbMatch = (rental.Suburb || "").toLowerCase().includes(searchLower);
-    const regionMatch = region === "All" || rental.Region === region;
-    return suburbMatch && regionMatch;
-  });
-  return [...filtered].sort((a, b) => {
-    const aVal = sortKey === "Suburb" ? (a.Suburb || "") : (a[sortKey] ?? -Infinity);
-    const bVal = sortKey === "Suburb" ? (b.Suburb || "") : (b[sortKey] ?? -Infinity);
-    if (aVal < bVal) return sortDir === "asc" ? -1 : 1;
-    if (aVal > bVal) return sortDir === "asc" ? 1 : -1;
-    return 0;
-  });
-}, [rentals, debouncedSearch, region, sortKey, sortDir]); 
+  const filteredRentals = useMemo(() => {
+    const searchLower = debouncedSearch.toLowerCase(); 
+    const filtered = rentals.filter((rental) => {
+      const suburbMatch = (rental.Suburb || "").toLowerCase().includes(searchLower);
+      const regionMatch = region === "All" || rental.Region === region;
+      return suburbMatch && regionMatch;
+    });
+    return [...filtered].sort((a, b) => {
+      const aVal = sortKey === "Suburb" ? (a.Suburb || "") : (a[sortKey] ?? -Infinity);
+      const bVal = sortKey === "Suburb" ? (b.Suburb || "") : (b[sortKey] ?? -Infinity);
+      if (aVal < bVal) return sortDir === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [rentals, debouncedSearch, region, sortKey, sortDir]); 
 
   const stats = useMemo(() => {
     const valid = filteredRentals.filter((r) => r[activeBedType] != null && r[activeBedType] !== 0);
@@ -194,7 +194,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* main content*/}
+      {/* main content */}
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "32px 24px", color: "#333" }}>
         
         {/* property type filter at top */}
@@ -206,23 +206,20 @@ export default function App() {
           padding: "4px",
         }}>
           <span style={{ fontSize: 13, fontWeight: 500, color: "#555", marginRight: 8, alignSelf: "center" }}> </span>
-         
         </div>
-
 
         {/* sections/order */}
         <section id="map" style={{ marginBottom: 48, scrollMarginTop: 110 }}>
- 
-  <MapView 
-    rentals={rentals} 
-    activeBedType={activeBedType} 
-    search={debouncedMapSearch} 
-    region={region} 
-    onBedTypeChange={setActiveBedType}
-    mapSearchValue={mapSearch}
-    onMapSearchChange={setMapSearch}
-  />
-</section>
+          <MapView 
+            rentals={rentals} 
+            activeBedType={activeBedType} 
+            search={debouncedMapSearch} 
+            region={region} 
+            onBedTypeChange={setActiveBedType}
+            mapSearchValue={mapSearch}
+            onMapSearchChange={setMapSearch}
+          />
+        </section>
 
         {/* map summary cards */}
         <div style={{
@@ -263,65 +260,80 @@ export default function App() {
           <Top10Tables rentals={filteredRentals} />
         </section>
 
-        {/* search and filters interactivity */}
-        <section id="filters" style={{ marginBottom: 48, scrollMarginTop: 110 }}>
-          <div style={{ background: "white", borderRadius: 12, padding: 24, border: "1px solid #eee" }}>
-            <h2 style={{ margin: "0 0 16px 0", fontSize: 18, fontWeight: 600, color: "#222" }}>🔍 Search &amp; Filter</h2>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 20 }}>
-              <input 
-                type="text" 
-                placeholder="Search suburb..." 
-                value={search} 
-                onChange={(e) => setSearch(e.target.value)} 
-                style={{ flex: 1, minWidth: 200, padding: "10px 12px", border: "1px solid #ddd", borderRadius: 8, fontSize: 14, color: "#333", background: "white" }}
-              />
-              <select value={region} onChange={(e) => setRegion(e.target.value)} style={{ padding: "10px 12px", border: "1px solid #ddd", borderRadius: 8, fontSize: 14, background: "white", color: "#333" }}>
-                {regions.map((r) => <option key={r} value={r}>{r}</option>)}
-              </select>
-              <select value={sortKey} onChange={(e) => setSortKey(e.target.value)} style={{ padding: "10px 12px", border: "1px solid #ddd", borderRadius: 8, fontSize: 14, background: "white", color: "#333" }}>
-                <option value="Suburb">Suburb (A–Z)</option>
-                {BED_TYPES.map(({ key, label }) => <option key={key} value={key}>{label} price</option>)}
-              </select>
-              <button onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))} style={{ padding: "10px 20px", background: "#667eea", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>
-                {sortDir === "asc" ? "↑ Asc" : "↓ Desc"}
-              </button>
-            </div>
-
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center" }}>
-              <span style={{ fontSize: 13, color: "#555" }}>Chart Filters:</span>
-              <button 
-                onClick={() => chartBedTypes.length === BED_TYPES.length ? setChartBedTypes([]) : setChartBedTypes(BED_TYPES.map((b) => b.key))} 
-                style={{ padding: "4px 12px", background: chartBedTypes.length === BED_TYPES.length ? "#667eea" : "#f0f0f0", color: chartBedTypes.length === BED_TYPES.length ? "white" : "#333", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 12 }}
-              >
-                All
-              </button>
-              {BED_TYPES.map(({ key, label }) => (
-                <label key={key} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, cursor: "pointer", color: "#333" }}>
-                  <input type="checkbox" checked={chartBedTypes.includes(key)} onChange={() => toggleChartBedType(key)} />
-                  {label}
-                </label>
-              ))}
-            </div>
-          </div>
-        </section>
-
+     
         {/* search and filters chart */}
-        <div style={{ background: "white", borderRadius: 12, padding: 20, marginBottom: 48, border: "1px solid #eee", overflowX: "auto" }}>
-          <div style={{ minWidth: Math.max(filteredRentals.length * 55, 800), height: 500 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={filteredRentals} margin={{ top: 20, right: 20, left: 10, bottom: 120 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                <XAxis dataKey="Suburb" angle={-45} textAnchor="end" interval={0} height={110} tick={{ fontSize: 11, fill: "#555" }} />
-                <YAxis tick={{ fill: "#555" }} />
-                <Tooltip formatter={(value) => value != null && value !== 0 ? `$${value}` : "No data"} contentStyle={{ backgroundColor: "white", color: "#333", border: "1px solid #ddd" }} />
-                <Legend wrapperStyle={{ color: "#333" }} />
-                {BED_TYPES.filter(({ key }) => chartBedTypes.includes(key)).map(({ key, label }, index) => (
-                  <Bar key={key} dataKey={key} name={label} fill={BAR_COLORS[index]} />
-                ))}
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+<section id="filters" style={{ scrollMarginTop: 110 }}>
+  <h2 style={{ margin: "0 0 16px 0", fontSize: 18, fontWeight: 600, color: "#222" }}>🔍 Search &amp; Filter</h2>
+  <div style={{ background: "white", borderRadius: 12, padding: 20, marginBottom: 48, border: "1px solid #eee", overflowX: "auto" }}>
+    
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
+        <input 
+          type="text" 
+          placeholder="Search suburb..." 
+          value={search} 
+          onChange={(e) => setSearch(e.target.value)} 
+          style={{ flex: 1, minWidth: 200, padding: "10px 12px", border: "1px solid #ddd", borderRadius: 8, fontSize: 14, color: "#333", background: "white" }}
+        />
+        <select value={region} onChange={(e) => setRegion(e.target.value)} style={{ padding: "10px 12px", border: "1px solid #ddd", borderRadius: 8, fontSize: 14, background: "white", color: "#333" }}>
+          {regions.map((r) => <option key={r} value={r}>{r}</option>)}
+        </select>
+        <select value={sortKey} onChange={(e) => setSortKey(e.target.value)} style={{ padding: "10px 12px", border: "1px solid #ddd", borderRadius: 8, fontSize: 14, background: "white", color: "#333" }}>
+          <option value="Suburb">Suburb (A–Z)</option>
+          {BED_TYPES.map(({ key, label }) => <option key={key} value={key}>{label} price</option>)}
+        </select>
+        <button onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))} style={{ padding: "10px 20px", background: "#667eea", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>
+          {sortDir === "asc" ? "↑ Asc" : "↓ Desc"}
+        </button>
+      </div>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center" }}>
+        <span style={{ fontSize: 13, color: "#555" }}>Chart Filters:</span>
+        <button 
+          onClick={() => chartBedTypes.length === BED_TYPES.length ? setChartBedTypes([]) : setChartBedTypes(BED_TYPES.map((b) => b.key))} 
+          style={{ padding: "4px 12px", background: chartBedTypes.length === BED_TYPES.length ? "#667eea" : "#f0f0f0", color: chartBedTypes.length === BED_TYPES.length ? "white" : "#333", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 12 }}
+        >
+          All
+        </button>
+        {BED_TYPES.map(({ key, label }) => (
+          <label key={key} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, cursor: "pointer", color: "#333" }}>
+            <input type="checkbox" checked={chartBedTypes.includes(key)} onChange={() => toggleChartBedType(key)} />
+            {label}
+          </label>
+        ))}
+      </div>
+    </div>
+
+    <h3 style={{ margin: "0 0 16px", fontSize: 16 }}>
+      Rent Prices by Suburb — {chartBedTypes.length === BED_TYPES.length 
+        ? "All Property Types" 
+        : BED_TYPES.filter(({ key }) => chartBedTypes.includes(key)).map(({ label }) => label).join(", ")}
+    </h3>
+    
+    <div style={{ minWidth: Math.max(filteredRentals.length * 55, 800), height: 500 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={filteredRentals} margin={{ top: 20, right: 20, left: 30, bottom: 120 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+          <XAxis dataKey="Suburb" angle={-45} textAnchor="end" interval={0} height={110} tick={{ fontSize: 11, fill: "#555" }} />
+          <YAxis 
+            tick={{ fill: "#555" }}
+            label={{ 
+              value: 'Weekly Rent ($)', 
+              angle: -90, 
+              position: 'insideLeft',
+              style: { textAnchor: 'middle', fill: '#555', fontSize: 12 }
+            }}
+          />
+          <Tooltip formatter={(value) => value != null && value !== 0 ? `$${value}` : "No data"} contentStyle={{ backgroundColor: "white", color: "#333", border: "1px solid #ddd" }} />
+          <Legend wrapperStyle={{ color: "#333" }} />
+          {BED_TYPES.filter(({ key }) => chartBedTypes.includes(key)).map(({ key, label }, index) => (
+            <Bar key={key} dataKey={key} name={label} fill={BAR_COLORS[index]} />
+          ))}
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  </div>
+</section>
 
         {/* listings */}
         <section id="listings" style={{ scrollMarginTop: 110 }}>
