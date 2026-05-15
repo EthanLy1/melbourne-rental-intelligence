@@ -38,15 +38,16 @@ const NAV_ITEMS = [
 
 export default function App() {
   const { rentals, loading, error } = useRentalData();
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState("");  
+  const [mapSearch, setMapSearch] = useState("");  
   const [region, setRegion] = useState("All");
   const [sortKey, setSortKey] = useState("Suburb");
   const [sortDir, setSortDir] = useState("asc");
   const [activeBedType, setActiveBedType] = useState("twoBedFlat");
   const [chartBedTypes, setChartBedTypes] = useState(BED_TYPES.map((b) => b.key));
   const [activeSection, setActiveSection] = useState("insights");
-
-const debouncedSearch = useDebounce(search, 300); // Add this line
+  const debouncedSearch = useDebounce(search, 300);
+  const debouncedMapSearch = useDebounce(mapSearch, 300);  
 
   // update active section based on scroll
   useEffect(() => {
@@ -87,7 +88,7 @@ const debouncedSearch = useDebounce(search, 300); // Add this line
   }, [rentals]);
 
  const filteredRentals = useMemo(() => {
-  const searchLower = debouncedSearch.toLowerCase(); // Changed from search to debouncedSearch
+  const searchLower = debouncedSearch.toLowerCase(); 
   const filtered = rentals.filter((rental) => {
     const suburbMatch = (rental.Suburb || "").toLowerCase().includes(searchLower);
     const regionMatch = region === "All" || rental.Region === region;
@@ -100,7 +101,7 @@ const debouncedSearch = useDebounce(search, 300); // Add this line
     if (aVal > bVal) return sortDir === "asc" ? 1 : -1;
     return 0;
   });
-}, [rentals, debouncedSearch, region, sortKey, sortDir]); // Changed search to debouncedSearch
+}, [rentals, debouncedSearch, region, sortKey, sortDir]); 
 
   const stats = useMemo(() => {
     const valid = filteredRentals.filter((r) => r[activeBedType] != null && r[activeBedType] !== 0);
@@ -211,14 +212,17 @@ const debouncedSearch = useDebounce(search, 300); // Add this line
 
         {/* sections/order */}
         <section id="map" style={{ marginBottom: 48, scrollMarginTop: 110 }}>
-          <MapView 
-          rentals={rentals} 
-          activeBedType={activeBedType} 
-          search={debouncedSearch} 
-          region={region} 
-          onBedTypeChange={setActiveBedType}
-          />
-        </section>
+ 
+  <MapView 
+    rentals={rentals} 
+    activeBedType={activeBedType} 
+    search={debouncedMapSearch} 
+    region={region} 
+    onBedTypeChange={setActiveBedType}
+    mapSearchValue={mapSearch}
+    onMapSearchChange={setMapSearch}
+  />
+</section>
 
         {/* map summary cards */}
         <div style={{

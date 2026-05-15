@@ -6,13 +6,6 @@ import { BED_TYPES, MELBOURNE_SUBURB_COORDINATES } from "../config/constants";
 import { formatPrice, createColoredIcon, calculatePercentiles } from "../utils/helpers";
 import { styles } from "../styles";
 
-// Fix for default marker icons in React-Leaflet
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-});
 
 function MapController({ showAll }) {
   const map = useMap();
@@ -29,7 +22,7 @@ function MapController({ showAll }) {
   return null;
 }
 
-export default function MapView({ rentals, activeBedType, search, region, onBedTypeChange }) {
+export default function MapView({ rentals, activeBedType, search, region, mapSearchValue, onMapSearchChange, onBedTypeChange }) {
   const [hoveredSuburb, setHoveredSuburb] = useState(null);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [showAllSuburbs, setShowAllSuburbs] = useState(false);
@@ -69,21 +62,44 @@ export default function MapView({ rentals, activeBedType, search, region, onBedT
     <div style={{ marginBottom: 40 }}>
       <h2 style={styles.subheading}>🗺️ Melbourne Rental Map</h2>
 
-      {/* property type filter */}
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 20 }}>
-  <span style={styles.label}>View prices for:</span>
-  {BED_TYPES.map(({ key, label }) => (
-    <button 
-      key={key} 
-      onClick={() => onBedTypeChange?.(key)} 
+      
+
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 16 }}>
+
+  {/* map search bar */}
+  <div style={{ flex: 1, minWidth: 250 }}>
+    <input 
+      type="text" 
+      placeholder="🔍 Search suburbs on map..." 
+      value={mapSearchValue} 
+      onChange={(e) => onMapSearchChange?.(e.target.value)} 
       style={{ 
-        ...styles.button, 
-        ...(activeBedType === key ? styles.activeButton : {}) 
+        width: "100%", 
+        padding: "10px 12px", 
+        border: "1px solid #ddd", 
+        borderRadius: 8, 
+        fontSize: 14,
+        background: "white"
       }}
-    >
-      {label}
-    </button>
-  ))}
+    />
+  </div>
+
+  {/* property type filter */}
+  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+    <span style={styles.label}>View prices for:</span>
+    {BED_TYPES.map(({ key, label }) => (
+      <button 
+        key={key} 
+        onClick={() => onBedTypeChange?.(key)} 
+        style={{ 
+          ...styles.button, 
+          ...(activeBedType === key ? styles.activeButton : {}) 
+        }}
+      >
+        {label}
+      </button>
+    ))}
+  </div>
 </div>
       
       <div style={styles.card}>
