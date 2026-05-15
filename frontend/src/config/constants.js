@@ -1,0 +1,146 @@
+export const BED_TYPES = [
+  { key: "oneBedFlat", label: "1 Bed Flat", column: "1 Bed Flat_Median" },
+  { key: "twoBedFlat", label: "2 Bed Flat", column: "2 Bed Flat_Median" },
+  { key: "twoBedHouse", label: "2 Bed House", column: "2 Bed House_Median" },
+  { key: "threeBedHouse", label: "3 Bed House", column: "3 Bed House_Median" },
+  { key: "fourBedHouse", label: "4 Bed House", column: "4 Bed House_Median" },
+];
+
+export const BAR_COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7f7f", "#a4de6c"];
+
+
+
+export const PIE_COLORS = [
+  "#8884d8", "#82ca9d", "#ffc658", "#ff7f7f", "#a4de6c",
+  "#8dd1e1", "#d0a4de", "#ffb6c1", "#ffd700", "#98fb98"
+];
+
+export const STACKED_COLORS = [
+  "#27ae60", // Green = Budget
+  "#82ca9d", // Light green = Affordable  
+  "#f1c40f", // Yellow = Mid-range
+  "#e67e22", // Orange = Premium
+  "#e74c3c", // Red = Luxury
+];
+
+export const MELBOURNE_SUBURB_COORDINATES = {
+  // Inner Melbourne
+  "Albert Park-Middle Park-West St Kilda": { lat: -37.8480, lng: 144.9590 },
+  "Armadale": { lat: -37.8560, lng: 145.0150 },
+  "Carlton North": { lat: -37.7890, lng: 144.9700 },
+  "Carlton-Parkville": { lat: -37.7980, lng: 144.9600 },
+  "CBD-St Kilda Rd": { lat: -37.8170, lng: 144.9670 },
+  "Collingwood-Abbotsford": { lat: -37.8020, lng: 144.9980 },
+  "Docklands": { lat: -37.8170, lng: 144.9460 },
+  "East Melbourne": { lat: -37.8140, lng: 144.9850 },
+  "East St Kilda": { lat: -37.8670, lng: 144.9970 },
+  "Elwood": { lat: -37.8820, lng: 144.9850 },
+  "Fitzroy": { lat: -37.7986, lng: 144.9794 },
+  "Fitzroy North-Clifton Hill": { lat: -37.7860, lng: 144.9870 },
+  "Flemington-Kensington": { lat: -37.7880, lng: 144.9260 },
+  "North Melbourne-West Melbourne": { lat: -37.8000, lng: 144.9400 },
+  "Port Melbourne": { lat: -37.8370, lng: 144.9350 },
+  "Prahran-Windsor": { lat: -37.8520, lng: 144.9960 },
+  "Richmond-Burnley": { lat: -37.8230, lng: 144.9980 },
+  "South Melbourne": { lat: -37.8330, lng: 144.9580 },
+  "South Yarra": { lat: -37.8386, lng: 144.9900 },
+  "Southbank": { lat: -37.8220, lng: 144.9640 },
+  "St Kilda": { lat: -37.8667, lng: 144.9833 },
+  "Toorak": { lat: -37.8420, lng: 145.0180 },
+  // Eastern Suburbs
+  "Balwyn": { lat: -37.8110, lng: 145.0580 },
+  "Blackburn": { lat: -37.8200, lng: 145.1460 },
+  "Box Hill": { lat: -37.8167, lng: 145.1167 },
+  "Bulleen-Templestowe-Doncaster": { lat: -37.7730, lng: 145.0980 },
+  "Burwood-Ashburton": { lat: -37.8500, lng: 145.1010 },
+  "Camberwell-Glen Iris": { lat: -37.8330, lng: 145.0640 },
+  "Canterbury-Surrey Hills-Mont Albert": { lat: -37.8250, lng: 145.0750 },
+  "Chadstone-Oakleigh": { lat: -37.8930, lng: 145.0970 },
+  "Clayton": { lat: -37.9170, lng: 145.1310 },
+  "Doncaster East-Donvale": { lat: -37.7830, lng: 145.1570 },
+  "East Hawthorn": { lat: -37.8240, lng: 145.0480 },
+  "Glen Waverley-Mulgrave": { lat: -37.8833, lng: 145.1667 },
+  "Hawthorn": { lat: -37.8167, lng: 145.0333 },
+  "Kew": { lat: -37.8080, lng: 145.0320 },
+  "Mount Waverley": { lat: -37.8780, lng: 145.1310 },
+  "Nunawading-Mitcham": { lat: -37.8200, lng: 145.1780 },
+  "Vermont-Forest Hill-Burwood East": { lat: -37.8400, lng: 145.1820 },
+  // Southern Suburbs
+  "Aspendale-Chelsea-Carrum": { lat: -38.0210, lng: 145.1170 },
+  "Bentleigh": { lat: -37.9180, lng: 145.0360 },
+  "Brighton": { lat: -37.9056, lng: 144.9958 },
+  "Brighton East": { lat: -37.9080, lng: 145.0070 },
+  "Carnegie": { lat: -37.8890, lng: 145.0580 },
+  "Caulfield": { lat: -37.8800, lng: 145.0220 },
+  "Cheltenham": { lat: -37.9670, lng: 145.0490 },
+  "Elsternwick": { lat: -37.8860, lng: 145.0010 },
+  "Hampton-Beaumaris": { lat: -37.9400, lng: 145.0100 },
+  "Malvern": { lat: -37.8570, lng: 145.0320 },
+  "Malvern East": { lat: -37.8750, lng: 145.0550 },
+  "Mentone-Parkdale-Mordialloc": { lat: -37.9870, lng: 145.0740 },
+  "Murrumbeena-Hughesdale": { lat: -37.8980, lng: 145.0670 },
+  // Western Suburbs
+  "Altona": { lat: -37.8660, lng: 144.8210 },
+  "Footscray": { lat: -37.8000, lng: 144.9000 },
+  "Keilor East-Avondale Heights": { lat: -37.7340, lng: 144.8560 },
+  "Melton": { lat: -37.6833, lng: 144.5833 },
+  "Newport-Spotswood": { lat: -37.8440, lng: 144.8830 },
+  "St Albans-Deer Park": { lat: -37.7440, lng: 144.7780 },
+  "Sunshine": { lat: -37.7870, lng: 144.8360 },
+  "Sydenham": { lat: -37.7000, lng: 144.7667 },
+  "Werribee-Hoppers Crossing": { lat: -37.9000, lng: 144.6667 },
+  "West Footscray": { lat: -37.7970, lng: 144.8850 },
+  "Williamstown": { lat: -37.8580, lng: 144.8950 },
+  "Yarraville-Seddon": { lat: -37.8160, lng: 144.8880 },
+  // Northern Suburbs
+  "Broadmeadows-Roxburgh Park": { lat: -37.6667, lng: 144.9167 },
+  "Brunswick": { lat: -37.7667, lng: 144.9667 },
+  "Coburg-Pascoe Vale South": { lat: -37.7460, lng: 144.9630 },
+  "Craigieburn": { lat: -37.6000, lng: 144.9333 },
+  "East Brunswick": { lat: -37.7750, lng: 144.9820 },
+  "Essendon": { lat: -37.7500, lng: 144.9167 },
+  "Gladstone Park-Tullamarine": { lat: -37.6900, lng: 144.8830 },
+  "Keilor": { lat: -37.7167, lng: 144.8333 },
+  "Moonee Ponds-Ascot Vale": { lat: -37.7667, lng: 144.9167 },
+  "Oak Park-Glenroy-Fawkner": { lat: -37.7100, lng: 144.9330 },
+  "Pascoe Vale-Coburg North": { lat: -37.7300, lng: 144.9500 },
+  "Sunbury": { lat: -37.5667, lng: 144.7167 },
+  "West Brunswick": { lat: -37.7740, lng: 144.9520 },
+  // North East Suburbs
+  "Bundoora-Greensborough-Hurstbridge": { lat: -37.7000, lng: 145.0833 },
+  "Eltham-Research-Montmorency": { lat: -37.7167, lng: 145.1500 },
+  "Fairfield-Alphington": { lat: -37.7833, lng: 145.0167 },
+  "Heidelberg-Heidelberg West": { lat: -37.7500, lng: 145.0667 },
+  "Ivanhoe-Ivanhoe East": { lat: -37.7667, lng: 145.0500 },
+  "Mill Park-Epping": { lat: -37.6333, lng: 145.0167 },
+  "Northcote": { lat: -37.7667, lng: 145.0000 },
+  "Preston": { lat: -37.7500, lng: 145.0167 },
+  "Reservoir": { lat: -37.7167, lng: 145.0000 },
+  "Thomastown-Lalor": { lat: -37.6833, lng: 145.0167 },
+  "Thornbury": { lat: -37.7667, lng: 145.0167 },
+  "Whittlesea": { lat: -37.5167, lng: 145.1167 },
+  // Outer East Suburbs
+  "Bayswater": { lat: -37.8500, lng: 145.2667 },
+  "Boronia": { lat: -37.8667, lng: 145.2833 },
+  "Croydon-Lilydale": { lat: -37.8000, lng: 145.3167 },
+  "Ferntree Gully": { lat: -37.8833, lng: 145.2833 },
+  "Ringwood": { lat: -37.8167, lng: 145.2333 },
+  "Rowville": { lat: -37.9333, lng: 145.2500 },
+  "Wantirna-Scoresby": { lat: -37.8667, lng: 145.2167 },
+  "Yarra Ranges": { lat: -37.7333, lng: 145.6500 },
+  // South East Suburbs
+  "Berwick": { lat: -38.0333, lng: 145.3500 },
+  "Cranbourne": { lat: -38.1000, lng: 145.2833 },
+  "Dandenong": { lat: -37.9833, lng: 145.2167 },
+  "Dandenong North-Endeavour Hills": { lat: -37.9667, lng: 145.2000 },
+  "Narre Warren-Hampton Park": { lat: -38.0333, lng: 145.3000 },
+  "Noble Park": { lat: -37.9667, lng: 145.1667 },
+  "Pakenham": { lat: -38.0667, lng: 145.4833 },
+  "Springvale": { lat: -37.9500, lng: 145.1500 },
+  // Mornington Peninsula
+  "Dromana-Portsea": { lat: -38.3333, lng: 144.9500 },
+  "Frankston": { lat: -38.1333, lng: 145.1167 },
+  "Hastings-Flinders": { lat: -38.3167, lng: 145.1833 },
+  "Mt Eliza-Mornington-Mt Martha": { lat: -38.2167, lng: 145.0333 },
+  "Seaford-Carrum Downs": { lat: -38.1167, lng: 145.1333 },
+};
