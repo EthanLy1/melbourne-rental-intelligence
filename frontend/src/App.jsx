@@ -10,10 +10,10 @@ import RegionAnalytics from "./components/RegionAnalytics";
 import AdditionalCharts from "./components/AdditionalCharts";
 import Top10Tables from "./components/Top10Tables";
 
-// Simplified navigation
+// navigation header
 const NAV_ITEMS = [
-  { id: "insights", label: "Insights", icon: "🧠" },
   { id: "map", label: "Map", icon: "🗺️" },
+  { id: "insights", label: "Insights", icon: "🧠" },
   { id: "region-analytics", label: "Regions", icon: "📊" },
   { id: "additional-charts", label: "Trends", icon: "📈" },
   { id: "rankings", label: "Rankings", icon: "🏆" },
@@ -31,7 +31,7 @@ export default function App() {
   const [chartBedTypes, setChartBedTypes] = useState(BED_TYPES.map((b) => b.key));
   const [activeSection, setActiveSection] = useState("insights");
 
-  // Update active section based on scroll
+  // update active section based on scroll
   useEffect(() => {
     const handleScroll = () => {
       const sections = NAV_ITEMS.map(item => document.getElementById(item.id));
@@ -172,10 +172,10 @@ export default function App() {
         </div>
       </div>
 
-      {/* MAIN CONTENT - All text here will be dark for contrast */}
+      {/* main content*/}
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "32px 24px", color: "#333" }}>
         
-        {/* Bed Type Selector */}
+        {/* property type filter at top */}
         <div style={{
           display: "flex",
           flexWrap: "wrap",
@@ -207,7 +207,14 @@ export default function App() {
           ))}
         </div>
 
-        {/* Summary Cards - White backgrounds with dark text */}
+
+        {/* sections/order */}
+        
+        <section id="map" style={{ marginBottom: 48, scrollMarginTop: 110 }}>
+          <MapView rentals={rentals} activeBedType={activeBedType} search={search} region={region} />
+        </section>
+
+        {/* map summary cards */}
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
@@ -230,13 +237,8 @@ export default function App() {
           </div>
         </div>
 
-        {/* Sections - These components need to have dark text too */}
         <section id="insights" style={{ marginBottom: 48, scrollMarginTop: 110 }}>
           <DataInsights rentals={rentals} />
-        </section>
-
-        <section id="map" style={{ marginBottom: 48, scrollMarginTop: 110 }}>
-          <MapView rentals={rentals} activeBedType={activeBedType} search={search} region={region} />
         </section>
 
         <section id="region-analytics" style={{ marginBottom: 48, scrollMarginTop: 110 }}>
@@ -251,7 +253,7 @@ export default function App() {
           <Top10Tables rentals={filteredRentals} />
         </section>
 
-        {/* Filters Section */}
+        {/* search and filters interactivity */}
         <section id="filters" style={{ marginBottom: 48, scrollMarginTop: 110 }}>
           <div style={{ background: "white", borderRadius: 12, padding: 24, border: "1px solid #eee" }}>
             <h2 style={{ margin: "0 0 16px 0", fontSize: 18, fontWeight: 600, color: "#222" }}>🔍 Search &amp; Filter</h2>
@@ -293,7 +295,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* Chart */}
+        {/* search and filters chart */}
         <div style={{ background: "white", borderRadius: 12, padding: 20, marginBottom: 48, border: "1px solid #eee", overflowX: "auto" }}>
           <div style={{ minWidth: Math.max(filteredRentals.length * 55, 800), height: 500 }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -311,7 +313,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* Listings */}
+        {/* listings */}
         <section id="listings" style={{ scrollMarginTop: 110 }}>
           <h2 style={{ margin: "0 0 20px 0", fontSize: 20, fontWeight: 600, color: "#222" }}>📋 Detailed Listings ({filteredRentals.length} suburbs)</h2>
           {filteredRentals.length === 0 ? (
@@ -334,7 +336,7 @@ export default function App() {
           )}
         </section>
 
-        {/* Back to top */}
+        {/* back to top button */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           style={{
