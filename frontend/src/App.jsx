@@ -29,7 +29,7 @@ function useDebounce(value, delay) {
 // navigation header
 const NAV_ITEMS = [
   { id: "map", label: "Map", icon: "🗺️" },
-  { id: "insights", label: "Insights", icon: "🧠" },
+  { id: "insights", label: "Insights", icon: "💡" },
   { id: "region-analytics", label: "Regions", icon: "📊" },
   { id: "additional-charts", label: "Trends", icon: "📈" },
   { id: "rankings", label: "Rankings", icon: "🏆" },

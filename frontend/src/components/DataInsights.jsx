@@ -200,7 +200,7 @@ export default function DataInsights({ rentals }) {
 
   return (
     <div style={{ marginBottom: 40 }}>
-      <h2 style={styles.subheading}>🧠 Smart Insights</h2>
+      <h2 style={styles.subheading}>💡 Smart Insights</h2>
       
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: 16 }}>
         {insights.map((insight, index) => (

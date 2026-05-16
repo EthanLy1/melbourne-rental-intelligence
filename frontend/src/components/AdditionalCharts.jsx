@@ -197,96 +197,114 @@ export default function AdditionalCharts({ rentals }) {
     }
   };
 
+  // Custom label renderer for stacked bars
+  const renderCustomBarLabel = (props) => {
+    const { x, y, width, height, value } = props;
+    if (value < 8) return null; // Only show labels for values >= 8%
+    return (
+      <text
+        x={x + width / 2}
+        y={y + height / 2}
+        fill="black"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        style={{ fontSize: 10, fontWeight: 500 }}
+      >
+        {value}%
+      </text>
+    );
+  };
+
   return (
     <div style={{ marginBottom: 40 }}>
       <h2 style={styles.subheading}>📈 Additional Analytics</h2>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
         {/* donut chart */}
-<div style={styles.card}>
-  <h3 style={{ margin: "0 0 16px", fontSize: 16 }}>Suburb Distribution by Region</h3>
-  <div style={{ display: "flex", flexDirection: "column", height: "calc(100% - 50px)" }}>
-    <div style={{ width: "100%", height: 350, position: "relative" }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
-          <Pie 
-  data={pieData} 
-  cx="50%" 
-  cy="50%" 
-  labelLine={false}
-  label={({ percent, x, y }) => {
-    const percentage = (percent * 100).toFixed(1);
-    if (parseFloat(percentage) <= 5) return null;
-    return (
-      <text x={x} y={y} textAnchor="middle" dominantBaseline="central"
-        style={{ fontSize: 11, fontWeight: 600, fill: "black" }}>
-        {percentage}%
-      </text>
-    );
-  }}
-  outerRadius={120}
-  innerRadius={50}
-  fill="#8884d8" 
-  dataKey="value"
->
-            {pieData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip 
-            formatter={(value, name, props) => {
-              const total = pieData.reduce((sum, d) => sum + d.value, 0);
-              const percentage = ((value / total) * 100).toFixed(1);
-              return [`${value} suburbs (${percentage}%)`, name];
-            }} 
-          />
-        </PieChart>
-      </ResponsiveContainer>
-    </div>
-    {/* donut legend */}
-    <div style={{ 
-      maxHeight: 100, 
-      height: 100,
-      overflowY: "auto", 
-      marginTop: 8,
-      display: "flex",
-      flexWrap: "wrap",
-      gap: 6,
-      justifyContent: "center",
-      padding: "6px 8px",
-      background: "#f8f9fa",
-      borderRadius: 8,
-      border: "1px solid #eee"
-    }}>
-      {pieData.map((item, index) => {
-        const total = pieData.reduce((sum, d) => sum + d.value, 0);
-        const percentage = (item.value / total) * 100;
-        return (
-          <div key={item.name} style={{ 
-            display: "inline-flex", 
-            alignItems: "center", 
-            gap: 4,
-            fontSize: 12,
-            padding: "2px 6px",
-            borderRadius: 4,
-            background: "white",
-            cursor: "default"
-          }}>
-            <span style={{ 
-              width: 8, 
-              height: 8, 
-              borderRadius: "50%", 
-              background: PIE_COLORS[index % PIE_COLORS.length],
-              flexShrink: 0
-            }} />
-            <span>{item.name}</span>
-            <span style={{ color: "#667" }}>({percentage.toFixed(0)}%)</span>
+        <div style={styles.card}>
+          <h3 style={{ margin: "0 0 16px", fontSize: 16 }}>Suburb Distribution by Region</h3>
+          <div style={{ display: "flex", flexDirection: "column", height: "calc(100% - 50px)" }}>
+            <div style={{ width: "100%", height: 350, position: "relative" }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie 
+                    data={pieData} 
+                    cx="50%" 
+                    cy="50%" 
+                    labelLine={false}
+                    label={({ percent, x, y }) => {
+                      const percentage = (percent * 100).toFixed(1);
+                      if (parseFloat(percentage) <= 5) return null;
+                      return (
+                        <text x={x} y={y} textAnchor="middle" dominantBaseline="central"
+                          style={{ fontSize: 11, fontWeight: 600, fill: "black" }}>
+                          {percentage}%
+                        </text>
+                      );
+                    }}
+                    outerRadius={120}
+                    innerRadius={50}
+                    fill="#8884d8" 
+                    dataKey="value"
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    formatter={(value, name, props) => {
+                      const total = pieData.reduce((sum, d) => sum + d.value, 0);
+                      const percentage = ((value / total) * 100).toFixed(1);
+                      return [`${value} suburbs (${percentage}%)`, name];
+                    }} 
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            {/* donut legend */}
+            <div style={{ 
+              maxHeight: 100, 
+              height: 100,
+              overflowY: "auto", 
+              marginTop: 8,
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 6,
+              justifyContent: "center",
+              padding: "6px 8px",
+              background: "#f8f9fa",
+              borderRadius: 8,
+              border: "1px solid #eee"
+            }}>
+              {pieData.map((item, index) => {
+                const total = pieData.reduce((sum, d) => sum + d.value, 0);
+                const percentage = (item.value / total) * 100;
+                return (
+                  <div key={item.name} style={{ 
+                    display: "inline-flex", 
+                    alignItems: "center", 
+                    gap: 4,
+                    fontSize: 12,
+                    padding: "2px 6px",
+                    borderRadius: 4,
+                    background: "white",
+                    cursor: "default"
+                  }}>
+                    <span style={{ 
+                      width: 8, 
+                      height: 8, 
+                      borderRadius: "50%", 
+                      background: PIE_COLORS[index % PIE_COLORS.length],
+                      flexShrink: 0
+                    }} />
+                    <span>{item.name}</span>
+                    <span style={{ color: "#667" }}>({percentage.toFixed(0)}%)</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        );
-      })}
-    </div>
-  </div>
-</div>
+        </div>
 
         {/* line chart */}
         <div style={styles.card}>
@@ -389,7 +407,6 @@ export default function AdditionalCharts({ rentals }) {
               </LineChart>
             </ResponsiveContainer>
           </div>
-          
         </div>
       </div>
 
@@ -397,7 +414,7 @@ export default function AdditionalCharts({ rentals }) {
       <div style={styles.card}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
           <h3 style={{ margin: 0, fontSize: 16 }}>
-            📊 Melbourne Metro Price Distribution by Region
+            📊 Melbourne Metro Price Distribution by Region for {stackedBedLabel}
           </h3>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ fontSize: 13, color: "#666" }}>Property Type:</span>
@@ -453,43 +470,73 @@ export default function AdditionalCharts({ rentals }) {
             No data available for {stackedBedLabel}
           </p>
         ) : (
-          <div style={{ width: "100%", height: 500, minWidth: 0 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={stackedBarData} margin={{ top: 20, right: 20, left: 10, bottom: 80 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="name" 
-                  angle={-45} 
-                  textAnchor="end" 
-                  interval={0} 
-                  height={100} 
-                  tick={{ fontSize: 12 }} 
-                />
-                <YAxis 
-                  label={{ 
-                    value: "Percentage (%)", 
-                    angle: -90, 
-                    position: "insideLeft", 
-                    style: { fontSize: 12 } 
-                  }} 
-                />
-                <Tooltip formatter={(value) => [`${value}%`, undefined]} />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                {stackedBarData[0] && Object.keys(stackedBarData[0])
-                  .filter(key => key !== "name" && key.toLowerCase() !== "total")
-                  .map((key, index) => (
-                    <Bar 
-                      key={key} 
-                      dataKey={key} 
-                      stackId="a" 
-                      fill={STACKED_COLORS[index % STACKED_COLORS.length]} 
-                      name={key}
-                    />
-                  ))
-                }
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <>
+            <div style={{ width: "100%", height: 500, minWidth: 0 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={stackedBarData} margin={{ top: 20, right: 20, left: 10, bottom: 80 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="name" 
+                    angle={-45} 
+                    textAnchor="end" 
+                    interval={0} 
+                    height={100} 
+                    tick={{ fontSize: 12 }} 
+                  />
+                  <YAxis 
+                    label={{ 
+                      value: "Percentage (%)", 
+                      angle: -90, 
+                      position: "insideLeft", 
+                      style: { fontSize: 12 } 
+                    }} 
+                  />
+                  <Tooltip 
+                    formatter={(value, name) => [`${value}%`, name]}
+                    labelFormatter={(label) => `📍 ${label}`}
+                    contentStyle={{ backgroundColor: "white", border: "1px solid #ddd", borderRadius: 6 }}
+                  />
+                  {stackedBarData[0] && Object.keys(stackedBarData[0])
+                    .filter(key => key !== "name" && key.toLowerCase() !== "total")
+                    .map((key, index) => (
+                      <Bar 
+                        key={key} 
+                        dataKey={key} 
+                        stackId="a" 
+                        fill={STACKED_COLORS[index % STACKED_COLORS.length]} 
+                        name={key}
+                        label={renderCustomBarLabel}
+                      />
+                    ))
+                  }
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            {/* Color legend - no background */}
+            <div style={{ 
+              marginTop: 16, 
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 16,
+              justifyContent: "center",
+              alignItems: "center"
+            }}>
+              {stackedBarData[0] && Object.keys(stackedBarData[0])
+                .filter(key => key !== "name" && key.toLowerCase() !== "total")
+                .map((key, index) => (
+                  <div key={key} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <div style={{ 
+                      width: 14, 
+                      height: 14, 
+                      background: STACKED_COLORS[index % STACKED_COLORS.length],
+                      borderRadius: 3
+                    }} />
+                    <span style={{ fontSize: 11, color: "#333" }}>{key}</span>
+                  </div>
+                ))
+              }
+            </div>
+          </>
         )}
       </div>
     </div>
