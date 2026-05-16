@@ -9,19 +9,34 @@ export const BED_TYPES = [
 export const BAR_COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7f7f", "#a4de6c"];
 
 
-
 export const PIE_COLORS = [
   "#8884d8", "#82ca9d", "#ffc658", "#ff7f7f", "#a4de6c",
   "#8dd1e1", "#d0a4de", "#ffb6c1", "#ffd700", "#98fb98"
 ];
 
 export const STACKED_COLORS = [
-  "#27ae60", // Green = Budget
-  "#82ca9d", // Light green = Affordable  
-  "#f1c40f", // Yellow = Mid-range
-  "#e67e22", // Orange = Premium
-  "#e74c3c", // Red = Luxury
+  "#27ae60", 
+  "#82ca9d",  
+  "#f1c40f", 
+  "#e67e22", 
+  "#e74c3c", 
 ];
+
+
+export const REGION_LINE_COLORS = [
+  "#8884d8", 
+  "#82ca9d", 
+  "#ffc658", 
+  "#ff7300", 
+  "#e74c3c", 
+  "#36a2eb", 
+  "#ff6384", 
+  "#4bc0c0", 
+  "#9966ff", 
+  "#ff9f40", 
+];
+
+
 
 export const MELBOURNE_SUBURB_COORDINATES = {
   // Inner Melbourne

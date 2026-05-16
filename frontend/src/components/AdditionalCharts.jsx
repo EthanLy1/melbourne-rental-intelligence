@@ -1,23 +1,23 @@
 import { useMemo, useState } from "react";
 import { PieChart, Pie, Cell, LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Legend } from "recharts";
-import { BED_TYPES, PIE_COLORS } from "../config/constants";
+import { BED_TYPES, PIE_COLORS, REGION_LINE_COLORS, STACKED_COLORS } from "../config/constants";
 import { styles } from "../styles";
 
-// Melbourne-specific stacked bar colors: Budget → Luxury (green to red)
-const STACKED_COLORS = [
-  "#27ae60", // Green = Budget (bottom 25%)
-  "#82ca9d", // Light green = Affordable (25-50%)
-  "#f1c40f", // Yellow = Mid-range (50-75%)
-  "#e67e22", // Orange = Premium (75-90%)
-  "#e74c3c", // Red = Luxury (top 10%)
-];
+
 
 export default function AdditionalCharts({ rentals }) {
-  const [selectedRegion, setSelectedRegion] = useState("All");
-  const [stackedBedType, setStackedBedType] = useState("threeBedHouse");
+  const [selectedRegions, setSelectedRegions] = useState(() => {
+    const allRegions = [...new Set(rentals.map((r) => r.Region).filter(Boolean))];
+    const initialState = {};
+    allRegions.forEach(region => {
+      initialState[region] = true;
+    });
+    return initialState;
+  });
+  const [stackedBedType, setStackedBedType] = useState("twoBedFlat");
 
   const regions = useMemo(() => {
-    return ["All", ...new Set(rentals.map((r) => r.Region).filter(Boolean))].sort();
+    return [...new Set(rentals.map((r) => r.Region).filter(Boolean))].sort();
   }, [rentals]);
 
   const pieData = useMemo(() => {
@@ -32,19 +32,33 @@ export default function AdditionalCharts({ rentals }) {
       .sort((a, b) => b.value - a.value);
   }, [rentals]);
 
+
   const lineChartData = useMemo(() => {
-    const targetRentals = selectedRegion === "All" ? rentals : rentals.filter(r => r.Region === selectedRegion);
+    const activeRegions = Object.entries(selectedRegions)
+      .filter(([, isSelected]) => isSelected)
+      .map(([region]) => region);
+    
+    // for each property type, calculate median rent for each selected region
     return BED_TYPES.map(({ key, label }) => {
-      const validRentals = targetRentals.filter(r => r[key] != null && r[key] !== 0);
-      const average = validRentals.length > 0 ? Math.round(validRentals.reduce((sum, r) => sum + r[key], 0) / validRentals.length) : 0;
-      const sorted = validRentals.map(r => r[key]).sort((a, b) => a - b);
-      const median = sorted.length > 0 ? sorted[Math.floor(sorted.length / 2)] : 0;
-      return { bedType: label, average, median, count: validRentals.length };
+      const dataPoint = { bedType: label };
+      
+      activeRegions.forEach(region => {
+        const regionRentals = rentals.filter(r => r.Region === region && r[key] != null && r[key] !== 0);
+        if (regionRentals.length > 0) {
+          const sorted = regionRentals.map(r => r[key]).sort((a, b) => a - b);
+          const median = sorted[Math.floor(sorted.length / 2)];
+          dataPoint[region] = median;
+        } else {
+          dataPoint[region] = null;
+        }
+      });
+      
+      return dataPoint;
     });
-  }, [rentals, selectedRegion]);
+  }, [rentals, selectedRegions]);
 
   const stackedBarData = useMemo(() => {
-    // Get all valid prices for the selected bed type
+    // get all valid prices for the selected property type
     const validPrices = rentals
       .filter(r => r[stackedBedType] != null && r[stackedBedType] !== 0)
       .map(r => r[stackedBedType])
@@ -52,7 +66,7 @@ export default function AdditionalCharts({ rentals }) {
 
     if (validPrices.length === 0) return [];
 
-    // Calculate percentiles for market-based segmentation
+    // calculate percentiles for market-based segmentation
     const p25 = validPrices[Math.floor(validPrices.length * 0.25)];
     const p50 = validPrices[Math.floor(validPrices.length * 0.5)];
     const p75 = validPrices[Math.floor(validPrices.length * 0.75)];
@@ -127,7 +141,7 @@ export default function AdditionalCharts({ rentals }) {
 
   const stackedBedLabel = BED_TYPES.find(b => b.key === stackedBedType)?.label || "";
 
-  // Get price stats for display
+  // get price stats for display
   const priceStats = useMemo(() => {
     const validPrices = rentals
       .filter(r => r[stackedBedType] != null && r[stackedBedType] !== 0)
@@ -148,88 +162,178 @@ export default function AdditionalCharts({ rentals }) {
     };
   }, [rentals, stackedBedType]);
 
+  // get active regions for the line chart
+  const activeRegions = Object.entries(selectedRegions)
+    .filter(([, isSelected]) => isSelected)
+    .map(([region]) => region);
+
+
+  // check if all regions are currently selected
+  const areAllSelected = regions.length > 0 && regions.every(region => selectedRegions[region]);
+
+  // toggle region selection
+  const toggleRegion = (region) => {
+    setSelectedRegions(prev => ({
+      ...prev,
+      [region]: !prev[region]
+    }));
+  };
+
+  // toggle all regions on/off
+  const toggleAllRegions = () => {
+    if (areAllSelected) {
+      // if all are selected, deselect all
+      const newState = {};
+      regions.forEach(region => {
+        newState[region] = false;
+      });
+      setSelectedRegions(newState);
+    } else {
+      // if not all are selected, select all
+      const newState = {};
+      regions.forEach(region => {
+        newState[region] = true;
+      });
+      setSelectedRegions(newState);
+    }
+  };
+
   return (
     <div style={{ marginBottom: 40 }}>
       <h2 style={styles.subheading}>📈 Additional Analytics</h2>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
-        {/* Pie Chart */}
+        {/* pie Chart */}
         <div style={styles.card}>
           <h3 style={{ margin: "0 0 16px", fontSize: 16 }}>🥧 Suburb Distribution by Region</h3>
-          <ResponsiveContainer width="100%" height={400}>
-            <PieChart>
-              <Pie 
-                data={pieData} 
-                cx="50%" 
-                cy="50%" 
-                labelLine={true} 
-                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(1)}%)`} 
-                outerRadius={130} 
-                fill="#8884d8" 
-                dataKey="value"
-              >
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip formatter={(value) => [`${value} suburbs`, "Count"]} />
-            </PieChart>
-          </ResponsiveContainer>
+          <div style={{ width: "100%", height: 400, position: "relative" }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie 
+                  data={pieData} 
+                  cx="50%" 
+                  cy="50%" 
+                  labelLine={true} 
+                  label={({ name, percent }) => `${name} (${(percent * 100).toFixed(1)}%)`} 
+                  outerRadius={130} 
+                  fill="#8884d8" 
+                  dataKey="value"
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => [`${value} suburbs`, "Count"]} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
-        {/* Line Chart */}
+        {/* line chart */}
         <div style={styles.card}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <h3 style={{ margin: 0, fontSize: 16 }}>📉 Rent Trends by Property Type</h3>
-            <select 
-              value={selectedRegion} 
-              onChange={(e) => setSelectedRegion(e.target.value)} 
-              style={{ ...styles.input, width: "auto" }}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
+            <h3 style={{ margin: 0, fontSize: 16 }}>📉 Median Weekly Rent by Region</h3>
+            <button 
+              onClick={toggleAllRegions}
+              style={{
+                ...styles.button,
+                ...(areAllSelected ? styles.activeButton : {}),
+              }}
             >
-              {regions.map((r) => (
-                <option key={r} value={r}>
-                  {r === "All" ? "All Regions" : r}
-                </option>
-              ))}
-            </select>
+              {areAllSelected ? "✓ All" : "All"}
+            </button>
           </div>
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={lineChartData} margin={{ top: 20, right: 20, left: 10, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="bedType" 
-                tick={{ fontSize: 12 }} 
-                angle={-15} 
-                textAnchor="end" 
-                height={50} 
-              />
-              <YAxis />
-              <Tooltip formatter={(value) => [`$${value}`, undefined]} />
-              <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="average" 
-                name="Average Rent" 
-                stroke="#8884d8" 
-                strokeWidth={2} 
-                dot={{ r: 6 }} 
-                activeDot={{ r: 8 }} 
-              />
-              <Line 
-                type="monotone" 
-                dataKey="median" 
-                name="Median Rent" 
-                stroke="#82ca9d" 
-                strokeWidth={2} 
-                dot={{ r: 6 }} 
-                activeDot={{ r: 8 }} 
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          
+          {/* region checkboxes */}
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 12,
+            marginBottom: 16,
+            padding: "8px 12px",
+            background: "#f8f9fa",
+            borderRadius: 8,
+            border: "1px solid #eee",
+            maxHeight: 100,
+            overflowY: "auto",
+          }}>
+            {regions.map((region, index) => (
+              <label
+                key={region}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  fontSize: 12,
+                  cursor: "pointer",
+                  padding: "2px 6px",
+                  borderRadius: 4,
+                  background: selectedRegions[region] ? `${REGION_LINE_COLORS[index % REGION_LINE_COLORS.length]}20` : "transparent",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedRegions[region] || false}
+                  onChange={() => toggleRegion(region)}
+                  style={{ cursor: "pointer" }}
+                />
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: 10,
+                    height: 10,
+                    borderRadius: "50%",
+                    background: REGION_LINE_COLORS[index % REGION_LINE_COLORS.length],
+                    marginRight: 2,
+                  }}
+                />
+                {region}
+              </label>
+            ))}
+          </div>
+
+          <div style={{ width: "100%", height: 350, minHeight: 350 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={lineChartData} margin={{ top: 20, right: 30, left: 10, bottom: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="bedType" 
+                  tick={{ fontSize: 12 }} 
+                  angle={-15} 
+                  textAnchor="end" 
+                  height={50} 
+                />
+                <YAxis 
+                  tickFormatter={(value) => `$${value}`}
+                />
+                <Tooltip 
+                  formatter={(value) => value ? `$${value}` : "No data"} 
+                  labelFormatter={(label) => `${label}`}
+                />
+                <Legend 
+                  wrapperStyle={{ fontSize: 11, maxHeight: 80, overflowY: "auto" }}
+                />
+                {activeRegions.map((region, index) => (
+                  <Line
+                    key={region}
+                    type="monotone"
+                    dataKey={region}
+                    name={region}
+                    stroke={REGION_LINE_COLORS?.[index % REGION_LINE_COLORS?.length] || `hsl(${index * 360 / activeRegions.length}, 70%, 50%)`}
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                    activeDot={{ r: 6 }}
+                    connectNulls={false}
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          
         </div>
       </div>
 
-      {/* Stacked Bar Chart with Percentile-Based Price Ranges */}
+      {/* stacked bar chart */}
       <div style={styles.card}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
           <h3 style={{ margin: 0, fontSize: 16 }}>
@@ -250,8 +354,8 @@ export default function AdditionalCharts({ rentals }) {
         </div>
         
         <div style={{ marginBottom: 12, fontSize: 12, color: "#666", display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
-          <span>🟢 Green = More affordable</span>
-          <span>🔴 Red = More expensive</span>
+          <span>🟢 = More affordable</span>
+          <span>🔴 = More expensive</span>
           {priceStats && (
             <span style={{ marginLeft: "auto", fontStyle: "italic" }}>
               {stackedBedLabel} — {priceStats.count} suburbs | 
@@ -261,7 +365,7 @@ export default function AdditionalCharts({ rentals }) {
           )}
         </div>
 
-        {/* Percentile reference card */}
+        {/* percentile reference card */}
         {priceStats && (
           <div style={{ 
             marginBottom: 16, 
@@ -289,43 +393,43 @@ export default function AdditionalCharts({ rentals }) {
             No data available for {stackedBedLabel}
           </p>
         ) : (
-          <ResponsiveContainer width="100%" height={500}>
-            <BarChart data={stackedBarData} margin={{ top: 20, right: 20, left: 10, bottom: 80 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="name" 
-                angle={-45} 
-                textAnchor="end" 
-                interval={0} 
-                height={100} 
-                tick={{ fontSize: 12 }} 
-              />
-              <YAxis 
-                label={{ 
-                  value: "Percentage (%)", 
-                  angle: -90, 
-                  position: "insideLeft", 
-                  style: { fontSize: 12 } 
-                }} 
-              />
-              <Tooltip formatter={(value) => [`${value}%`, undefined]} />
-              <Legend 
-                wrapperStyle={{ fontSize: 11 }}
-              />
-              {stackedBarData[0] && Object.keys(stackedBarData[0])
-                .filter(key => key !== "name")
-                .map((key, index) => (
-                  <Bar 
-                    key={key} 
-                    dataKey={key} 
-                    stackId="a" 
-                    fill={STACKED_COLORS[index]} 
-                    name={key}
-                  />
-                ))
-              }
-            </BarChart>
-          </ResponsiveContainer>
+          <div style={{ width: "100%", height: 500 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={stackedBarData} margin={{ top: 20, right: 20, left: 10, bottom: 80 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="name" 
+                  angle={-45} 
+                  textAnchor="end" 
+                  interval={0} 
+                  height={100} 
+                  tick={{ fontSize: 12 }} 
+                />
+                <YAxis 
+                  label={{ 
+                    value: "Percentage (%)", 
+                    angle: -90, 
+                    position: "insideLeft", 
+                    style: { fontSize: 12 } 
+                  }} 
+                />
+                <Tooltip formatter={(value) => [`${value}%`, undefined]} />
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+                {stackedBarData[0] && Object.keys(stackedBarData[0])
+                  .filter(key => key !== "name" && key !== "total" && !key.toLowerCase().includes("total"))
+                  .map((key, index) => (
+                    <Bar 
+                      key={key} 
+                      dataKey={key} 
+                      stackId="a" 
+                      fill={STACKED_COLORS[index % STACKED_COLORS.length]} 
+                      name={key}
+                    />
+                  ))
+                }
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         )}
       </div>
     </div>
