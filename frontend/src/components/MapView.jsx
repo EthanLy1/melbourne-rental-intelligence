@@ -6,7 +6,6 @@ import { BED_TYPES, MELBOURNE_SUBURB_COORDINATES } from "../config/constants";
 import { formatPrice, createColoredIcon, calculatePercentiles } from "../utils/helpers";
 import { styles } from "../styles";
 
-
 function MapController({ showAll }) {
   const map = useMap();
   
@@ -22,7 +21,7 @@ function MapController({ showAll }) {
   return null;
 }
 
-export default function MapView({ rentals, activeBedType, search, region, mapSearchValue, onMapSearchChange, onBedTypeChange }) {
+export default function MapView({ rentals, activeBedType, search, mapSearchValue, onMapSearchChange, onBedTypeChange }) {
   const [hoveredSuburb, setHoveredSuburb] = useState(null);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [showAllSuburbs, setShowAllSuburbs] = useState(false);
@@ -43,14 +42,13 @@ export default function MapView({ rentals, activeBedType, search, region, mapSea
         const hasCoords = MELBOURNE_SUBURB_COORDINATES[rental.Suburb];
         const hasData = rental[activeBedType] != null && rental[activeBedType] !== 0;
         const matchesSearch = !search || (rental.Suburb || "").toLowerCase().includes(searchLower);
-        const matchesRegion = region === "All" || rental.Region === region;
-        return hasCoords && hasData && matchesSearch && matchesRegion;
+        return hasCoords && hasData && matchesSearch;
       })
       .map(rental => ({
         ...rental,
         ...MELBOURNE_SUBURB_COORDINATES[rental.Suburb],
       }));
-  }, [rentals, activeBedType, search, region]);
+  }, [rentals, activeBedType, search]);
 
   const activeLabel = BED_TYPES.find((b) => b.key === activeBedType)?.label || "";
   
@@ -62,45 +60,42 @@ export default function MapView({ rentals, activeBedType, search, region, mapSea
     <div style={{ marginBottom: 40 }}>
       <h2 style={styles.subheading}>🗺️ Melbourne Rental Map</h2>
 
-      
-
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 16 }}>
+        {/* map search bar */}
+        <div style={{ flex: 1, minWidth: 250 }}>
+          <input 
+            type="text" 
+            placeholder="🔍 Search suburbs on map..." 
+            value={mapSearchValue} 
+            onChange={(e) => onMapSearchChange?.(e.target.value)} 
+            style={{ 
+              width: "100%", 
+              padding: "10px 12px", 
+              border: "1px solid #ddd", 
+              borderRadius: 8, 
+              fontSize: 14,
+              background: "white"
+            }}
+          />
+        </div>
 
-  {/* map search bar */}
-  <div style={{ flex: 1, minWidth: 250 }}>
-    <input 
-      type="text" 
-      placeholder="🔍 Search suburbs on map..." 
-      value={mapSearchValue} 
-      onChange={(e) => onMapSearchChange?.(e.target.value)} 
-      style={{ 
-        width: "100%", 
-        padding: "10px 12px", 
-        border: "1px solid #ddd", 
-        borderRadius: 8, 
-        fontSize: 14,
-        background: "white"
-      }}
-    />
-  </div>
-
-  {/* property type filter */}
-  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-    <span style={styles.label}>View prices for:</span>
-    {BED_TYPES.map(({ key, label }) => (
-      <button 
-        key={key} 
-        onClick={() => onBedTypeChange?.(key)} 
-        style={{ 
-          ...styles.button, 
-          ...(activeBedType === key ? styles.activeButton : {}) 
-        }}
-      >
-        {label}
-      </button>
-    ))}
-  </div>
-</div>
+        {/* property type filter */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+          <span style={styles.label}>View prices for:</span>
+          {BED_TYPES.map(({ key, label }) => (
+            <button 
+              key={key} 
+              onClick={() => onBedTypeChange?.(key)} 
+              style={{ 
+                ...styles.button, 
+                ...(activeBedType === key ? styles.activeButton : {}) 
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
       
       <div style={styles.card}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 16 }}>
@@ -108,7 +103,7 @@ export default function MapView({ rentals, activeBedType, search, region, mapSea
             <h3 style={{ margin: 0, fontSize: 16 }}>{activeLabel} Rent Prices — Melbourne Metropolitan Area</h3>
             <p style={{ margin: "4px 0 0", fontSize: 13, color: "#666" }}>
               Showing {suburbsWithCoords.length} of {totalWithCoords} suburbs with map data
-              {(search || region !== "All") && " (filtered)"}
+              {search && " (filtered by search)"}
             </p>
           </div>
           
