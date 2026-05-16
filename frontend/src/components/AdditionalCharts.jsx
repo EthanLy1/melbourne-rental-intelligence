@@ -206,7 +206,7 @@ export default function AdditionalCharts({ rentals }) {
         {/* pie Chart */}
         <div style={styles.card}>
           <h3 style={{ margin: "0 0 16px", fontSize: 16 }}>🥧 Suburb Distribution by Region</h3>
-          <div style={{ width: "100%", height: 400, position: "relative" }}>
+          <div style={{ width: "100%", height: 400, position: "relative", minWidth: 0 }}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie 
@@ -292,7 +292,7 @@ export default function AdditionalCharts({ rentals }) {
             ))}
           </div>
 
-          <div style={{ width: "100%", height: 350, minHeight: 350 }}>
+          <div style={{ width: "100%", height: 350, minHeight: 350, minWidth: 0 }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={lineChartData} margin={{ top: 20, right: 30, left: 10, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -393,7 +393,7 @@ export default function AdditionalCharts({ rentals }) {
             No data available for {stackedBedLabel}
           </p>
         ) : (
-          <div style={{ width: "100%", height: 500 }}>
+          <div style={{ width: "100%", height: 500, minWidth: 0 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={stackedBarData} margin={{ top: 20, right: 20, left: 10, bottom: 80 }}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -416,7 +416,7 @@ export default function AdditionalCharts({ rentals }) {
                 <Tooltip formatter={(value) => [`${value}%`, undefined]} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
                 {stackedBarData[0] && Object.keys(stackedBarData[0])
-                  .filter(key => key !== "name" && key !== "total" && !key.toLowerCase().includes("total"))
+                  .filter(key => key !== "name" && key.toLowerCase() !== "total")
                   .map((key, index) => (
                     <Bar 
                       key={key} 

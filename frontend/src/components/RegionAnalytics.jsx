@@ -101,9 +101,14 @@ export default function RegionAnalytics({ rentals }) {
           <BarChart data={chartData} margin={{ top: 20, right: 20, left: 10, bottom: 80 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" angle={-45} textAnchor="end" interval={0} height={100} tick={{ fontSize: 12 }} />
-            <YAxis />
+            <YAxis tickFormatter={(value) => `$${value}`}/>
             <Tooltip formatter={(value) => value != null && value !== 0 ? `$${value}` : "No data"} />
-            <Bar dataKey={activeBed} name={label} fill="#8884d8" radius={[4, 4, 0, 0]} />
+            <Bar dataKey={activeBed} name={label} fill="#8884d8" radius={[4, 4, 0, 0]} label={{ 
+    position: 'top', 
+    formatter: (value) => `$${value}`,
+    fontSize: 11,
+    fill: '#333'
+  }} />
           </BarChart>
         </ResponsiveContainer>
       </div>
