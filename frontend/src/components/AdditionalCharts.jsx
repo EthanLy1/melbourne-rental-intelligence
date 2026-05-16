@@ -197,23 +197,7 @@ export default function AdditionalCharts({ rentals }) {
     }
   };
 
-  // Custom label renderer for stacked bars
-  const renderCustomBarLabel = (props) => {
-    const { x, y, width, height, value } = props;
-    if (value < 8) return null; // Only show labels for values >= 8%
-    return (
-      <text
-        x={x + width / 2}
-        y={y + height / 2}
-        fill="black"
-        textAnchor="middle"
-        dominantBaseline="middle"
-        style={{ fontSize: 10, fontWeight: 500 }}
-      >
-        {value}%
-      </text>
-    );
-  };
+ 
 
   return (
     <div style={{ marginBottom: 40 }}>
@@ -321,7 +305,7 @@ export default function AdditionalCharts({ rentals }) {
             </button>
           </div>
           
-          {/* region checkboxes */}
+          {/* line chart region checkboxes */}
           <div style={{
             display: "flex",
             flexWrap: "wrap",
@@ -442,28 +426,7 @@ export default function AdditionalCharts({ rentals }) {
           )}
         </div>
 
-        {/* percentile reference card */}
-        {priceStats && (
-          <div style={{ 
-            marginBottom: 16, 
-            padding: "12px 16px", 
-            background: "#f8f9fa", 
-            borderRadius: 8,
-            display: "flex",
-            gap: 16,
-            flexWrap: "wrap",
-            fontSize: 12,
-            border: "1px solid #e0e0e0"
-          }}>
-            <div><strong>25th percentile:</strong> ${priceStats.p25}</div>
-            <div><strong>Median (50th):</strong> ${priceStats.median}</div>
-            <div><strong>75th percentile:</strong> ${priceStats.p75}</div>
-            <div><strong>90th percentile:</strong> ${priceStats.p90}</div>
-            <div style={{ color: "#888" }}>
-              (Based on {priceStats.count} suburbs)
-            </div>
-          </div>
-        )}
+        
         
         {stackedBarData.length === 0 ? (
           <p style={{ textAlign: "center", color: "#999", padding: 40 }}>
@@ -483,14 +446,7 @@ export default function AdditionalCharts({ rentals }) {
                     height={100} 
                     tick={{ fontSize: 12 }} 
                   />
-                  <YAxis 
-                    label={{ 
-                      value: "Percentage (%)", 
-                      angle: -90, 
-                      position: "insideLeft", 
-                      style: { fontSize: 12 } 
-                    }} 
-                  />
+                  <YAxis tickFormatter={(value) => `${value}%`} />
                   <Tooltip 
                     formatter={(value, name) => [`${value}%`, name]}
                     labelFormatter={(label) => `📍 ${label}`}
@@ -505,14 +461,14 @@ export default function AdditionalCharts({ rentals }) {
                         stackId="a" 
                         fill={STACKED_COLORS[index % STACKED_COLORS.length]} 
                         name={key}
-                        label={renderCustomBarLabel}
+                    
                       />
                     ))
                   }
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            {/* Color legend - no background */}
+            {/* stacked bar chart legend */}
             <div style={{ 
               marginTop: 16, 
               display: "flex",
