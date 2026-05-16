@@ -10,6 +10,7 @@ import RegionAnalytics from "./components/RegionAnalytics";
 import AdditionalCharts from "./components/AdditionalCharts";
 import SearchFilters from "./components/SearchFilters";
 import Top10Tables from "./components/Top10Tables";
+import LoadingScreen from "./components/LoadingScreen";
 
 // debounce function to improve search bar performance
 function useDebounce(value, delay) {
@@ -127,7 +128,7 @@ export default function App() {
 
   const activeLabel = BED_TYPES.find((b) => b.key === activeBedType)?.label || "";
 
-  if (loading) return <div style={{ padding: 20, color: "#333" }}>Loading Melbourne Rental Data...</div>;
+  if (loading) return <LoadingScreen/>;
   if (error) return <div style={{ padding: 20, color: "red" }}>{error}</div>;
 
   return (
@@ -315,13 +316,13 @@ export default function App() {
             position: "fixed",
             bottom: 24,
             right: 24,
-            width: 44,
-            height: 44,
+            width: 80,
+            height: 80,
             borderRadius: "50%",
             background: "#1a1a2e",
             color: "white",
             border: "none",
-            fontSize: 20,
+            fontSize: 40,
             cursor: "pointer",
             boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
           }}

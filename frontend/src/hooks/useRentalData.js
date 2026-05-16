@@ -20,13 +20,14 @@ export function useRentalData() {
           return parsed;
         });
         setRentals(cleanedData);
-      } catch (error) {
-        console.error("Error fetching rentals:", error);
+      } catch (err) {
+        console.error("Error fetching rentals:", err);
         setError("Failed to load rental data. Please try again.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchRentals();
   }, []);
 
