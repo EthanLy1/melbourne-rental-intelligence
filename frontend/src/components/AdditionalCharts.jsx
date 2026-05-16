@@ -4,7 +4,6 @@ import { BED_TYPES, PIE_COLORS, REGION_LINE_COLORS, STACKED_COLORS } from "../co
 import { styles } from "../styles";
 
 
-
 export default function AdditionalCharts({ rentals }) {
   const [selectedRegions, setSelectedRegions] = useState(() => {
     const allRegions = [...new Set(rentals.map((r) => r.Region).filter(Boolean))];
@@ -203,36 +202,96 @@ export default function AdditionalCharts({ rentals }) {
       <h2 style={styles.subheading}>📈 Additional Analytics</h2>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
-        {/* pie Chart */}
-        <div style={styles.card}>
-          <h3 style={{ margin: "0 0 16px", fontSize: 16 }}>🥧 Suburb Distribution by Region</h3>
-          <div style={{ width: "100%", height: 400, position: "relative", minWidth: 0 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie 
-                  data={pieData} 
-                  cx="50%" 
-                  cy="50%" 
-                  labelLine={true} 
-                  label={({ name, percent }) => `${name} (${(percent * 100).toFixed(1)}%)`} 
-                  outerRadius={130} 
-                  fill="#8884d8" 
-                  dataKey="value"
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => [`${value} suburbs`, "Count"]} />
-              </PieChart>
-            </ResponsiveContainer>
+        {/* donut chart */}
+<div style={styles.card}>
+  <h3 style={{ margin: "0 0 16px", fontSize: 16 }}>Suburb Distribution by Region</h3>
+  <div style={{ display: "flex", flexDirection: "column", height: "calc(100% - 50px)" }}>
+    <div style={{ width: "100%", height: 350, position: "relative" }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie 
+  data={pieData} 
+  cx="50%" 
+  cy="50%" 
+  labelLine={false}
+  label={({ percent, x, y }) => {
+    const percentage = (percent * 100).toFixed(1);
+    if (parseFloat(percentage) <= 5) return null;
+    return (
+      <text x={x} y={y} textAnchor="middle" dominantBaseline="central"
+        style={{ fontSize: 11, fontWeight: 600, fill: "black" }}>
+        {percentage}%
+      </text>
+    );
+  }}
+  outerRadius={120}
+  innerRadius={50}
+  fill="#8884d8" 
+  dataKey="value"
+>
+            {pieData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip 
+            formatter={(value, name, props) => {
+              const total = pieData.reduce((sum, d) => sum + d.value, 0);
+              const percentage = ((value / total) * 100).toFixed(1);
+              return [`${value} suburbs (${percentage}%)`, name];
+            }} 
+          />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+    {/* donut legend */}
+    <div style={{ 
+      maxHeight: 100, 
+      height: 100,
+      overflowY: "auto", 
+      marginTop: 8,
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6,
+      justifyContent: "center",
+      padding: "6px 8px",
+      background: "#f8f9fa",
+      borderRadius: 8,
+      border: "1px solid #eee"
+    }}>
+      {pieData.map((item, index) => {
+        const total = pieData.reduce((sum, d) => sum + d.value, 0);
+        const percentage = (item.value / total) * 100;
+        return (
+          <div key={item.name} style={{ 
+            display: "inline-flex", 
+            alignItems: "center", 
+            gap: 4,
+            fontSize: 12,
+            padding: "2px 6px",
+            borderRadius: 4,
+            background: "white",
+            cursor: "default"
+          }}>
+            <span style={{ 
+              width: 8, 
+              height: 8, 
+              borderRadius: "50%", 
+              background: PIE_COLORS[index % PIE_COLORS.length],
+              flexShrink: 0
+            }} />
+            <span>{item.name}</span>
+            <span style={{ color: "#667" }}>({percentage.toFixed(0)}%)</span>
           </div>
-        </div>
+        );
+      })}
+    </div>
+  </div>
+</div>
 
         {/* line chart */}
         <div style={styles.card}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
-            <h3 style={{ margin: 0, fontSize: 16 }}>📉 Median Weekly Rent by Region</h3>
+            <h3 style={{ margin: 0, fontSize: 16 }}>Median Weekly Rent by Region</h3>
             <button 
               onClick={toggleAllRegions}
               style={{
@@ -265,6 +324,7 @@ export default function AdditionalCharts({ rentals }) {
                   alignItems: "center",
                   gap: 6,
                   fontSize: 12,
+                  height: 15,
                   cursor: "pointer",
                   padding: "2px 6px",
                   borderRadius: 4,

@@ -64,7 +64,7 @@ export default function SearchFilters({
         </div>
 
         <h3 style={{ margin: "0 0 16px", fontSize: 16, textAlign: "center" }}>
-          Rent Prices by Suburb — {chartBedTypes.length === BED_TYPES.length 
+          Weekly Rent Prices by Suburb — {chartBedTypes.length === BED_TYPES.length 
             ? "All Property Types" 
             : BED_TYPES.filter(({ key }) => chartBedTypes.includes(key)).map(({ label }) => label).join(", ")}
         </h3>
@@ -76,15 +76,7 @@ export default function SearchFilters({
               <BarChart data={filteredRentals} margin={{ top: 20, right: 20, left: 30, bottom: 120 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                 <XAxis dataKey="Suburb" angle={-45} textAnchor="end" interval={0} height={110} tick={{ fontSize: 11, fill: "#555" }} />
-                <YAxis 
-                  tick={{ fill: "#555" }}
-                  label={{ 
-                    value: 'Weekly Rent ($)', 
-                    angle: -90, 
-                    position: 'insideLeft',
-                    style: { textAnchor: 'middle', fill: '#555', fontSize: 12 }
-                  }}
-                />
+                <YAxis tickFormatter={(value) => `$${value}`} />
                 <Tooltip formatter={(value) => value != null && value !== 0 ? `$${value}` : "No data"} contentStyle={{ backgroundColor: "white", color: "#333", border: "1px solid #ddd" }} />
 
                 {BED_TYPES.filter(({ key }) => chartBedTypes.includes(key)).map(({ key, label }, index) => (

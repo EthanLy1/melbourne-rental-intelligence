@@ -96,7 +96,7 @@ export default function RegionAnalytics({ rentals }) {
       </div>
 
       <div style={{ ...styles.card, marginBottom: 20 }}>
-        <h3 style={{ margin: "0 0 16px", fontSize: 16 }}>Average Rent by Region — {label}</h3>
+        <h3 style={{ margin: "0 0 16px", fontSize: 16 }}>Average Weekly Rent by Region — {label}</h3>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={chartData} margin={{ top: 20, right: 20, left: 10, bottom: 80 }}>
             <CartesianGrid strokeDasharray="3 3" />
