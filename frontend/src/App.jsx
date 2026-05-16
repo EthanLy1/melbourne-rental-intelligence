@@ -27,7 +27,7 @@ function useDebounce(value, delay) {
   return debouncedValue;
 }
 
-// navigation header - mobile friendly
+// nav bar tabs
 const NAV_ITEMS = [
   { id: "map", label: "Map", icon: "🗺️" },
   { id: "insights", label: "Insights", icon: "💡" },
@@ -47,7 +47,6 @@ export default function App() {
   const [sortDir, setSortDir] = useState("asc");
   const [activeBedType, setActiveBedType] = useState("twoBedFlat");
   const [chartBedTypes, setChartBedTypes] = useState(BED_TYPES.map((b) => b.key));
-  const [activeSection, setActiveSection] = useState("insights");
   const [isMobile, setIsMobile] = useState(false);
   const debouncedSearch = useDebounce(search, 300);
   const debouncedMapSearch = useDebounce(mapSearch, 300);  
@@ -62,30 +61,16 @@ export default function App() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // update active section based on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = NAV_ITEMS.map(item => document.getElementById(item.id));
-      const scrollPosition = window.scrollY + 120;
-
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const section = sections[i];
-        if (section && section.offsetTop <= scrollPosition) {
-          setActiveSection(NAV_ITEMS[i].id);
-          break;
-        }
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
+  // scroll to section from navbar with animation
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      const headerHeight = isMobile ? 140 : 110; // mobile header is taller
+      const header = document.querySelector('[style*="position: sticky"]');
+      const headerHeight = header ? header.getBoundingClientRect().height : (isMobile ? 140 : 110);
+      
       const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
+      const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 16; 
+      
       window.scrollTo({ top: offsetPosition, behavior: "smooth" });
     }
   };
@@ -178,13 +163,13 @@ export default function App() {
             opacity: 0.7,
             color: "rgba(255,255,255,0.8)",
             textAlign: "center",
-            display: isMobile ? "none" : "block", // hide subtitle on mobile
+            display: isMobile ? "none" : "block",
           }}>
             Comprehensive rental market analytics for Melbourne metropolitan area
           </p>
         </div>
 
-        {/* navigation */}
+        {/* navigation bar */}
         <div style={{
           padding: isMobile ? "0 12px" : "0 24px",
           display: "flex",
@@ -205,14 +190,19 @@ export default function App() {
                 padding: isMobile ? "10px 12px" : "12px 20px",
                 border: "none",
                 background: "transparent",
-                color: activeSection === item.id ? "white" : "rgba(255,255,255,0.6)",
+                color: "rgba(255,255,255,0.7)", 
                 fontSize: isMobile ? 12 : 14,
-                fontWeight: activeSection === item.id ? 600 : 400,
+                fontWeight: 400, 
                 cursor: "pointer",
-                borderBottom: activeSection === item.id ? "2px solid #667eea" : "2px solid transparent",
                 transition: "all 0.2s",
                 whiteSpace: "nowrap",
-                minHeight: 44, // touch-friendly
+                minHeight: 44,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "white";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "rgba(255,255,255,0.7)";
               }}
             >
               <span style={{ fontSize: isMobile ? 14 : 16 }}>{item.icon}</span>
@@ -230,8 +220,6 @@ export default function App() {
         color: "#333" 
       }}>
         
-       
-
         {/* sections */}
         <section id="map" style={{ marginBottom: 40, scrollMarginTop: 110 }}>
           <MapView 
