@@ -1,13 +1,25 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { BED_TYPES } from "../config/constants";
 import { parseValue } from "../utils/helpers";
 import { styles } from "../styles";
 
 export default function DataInsights({ rentals }) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  // check if mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const insights = useMemo(() => {
     const allInsights = [];
 
-    // Calculate region aggregates
+    // calculate region aggregates
     const regionAgg = {};
     rentals.forEach((rental) => {
       if (!rental.Region) return;
@@ -27,7 +39,7 @@ export default function DataInsights({ rentals }) {
       });
     });
 
-    // Calculate overall averages
+    // calculate overall averages
     const overallAvgs = {};
     BED_TYPES.forEach(({ key }) => {
       let total = 0, count = 0;
@@ -38,7 +50,7 @@ export default function DataInsights({ rentals }) {
       overallAvgs[key] = count > 0 ? total / count : 0;
     });
 
-    // 1. Find suburbs significantly above/below average
+    // 1. find suburbs significantly above/below average
     BED_TYPES.forEach(({ key, label }) => {
       const avg = overallAvgs[key];
       if (avg === 0) return;
@@ -73,7 +85,7 @@ export default function DataInsights({ rentals }) {
       }
     });
 
-    // 2. Region dominance insights
+    // 2. region dominance insights
     const regionAverages = Object.entries(regionAgg).map(([region, data]) => {
       const avgs = {};
       BED_TYPES.forEach(({ key }) => {
@@ -116,7 +128,7 @@ export default function DataInsights({ rentals }) {
       }
     }
 
-    // 3. Property type variance
+    // 3. property type variance
     const variances = BED_TYPES.map(({ key, label }) => {
       const values = rentals
         .filter(r => r[key] != null && r[key] !== 0)
@@ -138,7 +150,7 @@ export default function DataInsights({ rentals }) {
       });
     }
 
-    // 4. Concentration insights
+    // 4. concentration insights
     const totalSuburbs = rentals.length;
     Object.entries(regionAgg)
       .sort((a, b) => b[1].count - a[1].count)
@@ -156,7 +168,7 @@ export default function DataInsights({ rentals }) {
         }
       });
 
-    // 5. Price jump insights
+    // 5. price jump insights
     const avgByBed = BED_TYPES.map(({ key, label }) => ({
       key, label, avg: overallAvgs[key],
     })).filter(b => b.avg > 0);
@@ -174,7 +186,7 @@ export default function DataInsights({ rentals }) {
       }
     }
 
-    // 6. Regional value insights
+    // 6. regional value insights
     regionAverages.forEach(region => {
       if (region.oneBedFlat > 0 && region.fourBedHouse > 0) {
         const ratio = region.fourBedHouse / region.oneBedFlat;
@@ -200,42 +212,69 @@ export default function DataInsights({ rentals }) {
 
   return (
     <div style={{ marginBottom: 40 }}>
-      <h2 style={styles.subheading}>💡 Smart Insights</h2>
+      <h2 style={{ ...styles.subheading, fontSize: isMobile ? 18 : 22 }}>💡 Smart Insights</h2>
       
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: 16 }}>
+      {/* responsive grid */}
+      <div style={{ 
+        display: "grid", 
+        gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(350px, 1fr))", 
+        gap: 16 
+      }}>
         {insights.map((insight, index) => (
           <div
             key={index}
             style={{
               ...styles.card,
               borderLeft: `4px solid ${insight.color}`,
-              padding: "20px",
+              padding: isMobile ? "14px" : "20px",
               background: "white",
               transition: "transform 0.2s, box-shadow 0.2s",
               cursor: "default",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-2px)";
-              e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.1)";
+              if (!isMobile) {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.1)";
+              }
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
+              if (!isMobile) {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
+              }
             }}
           >
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-              <span style={{ fontSize: 24 }}>{insight.icon}</span>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: isMobile ? 10 : 12 }}>
+              <span style={{ fontSize: isMobile ? 20 : 24, flexShrink: 0 }}>{insight.icon}</span>
               <div style={{ flex: 1 }}>
-                <p style={{ margin: "0 0 8px", fontSize: 14, fontWeight: 500, lineHeight: 1.5, color: "#2c3e50" }}>
+                <p style={{ 
+                  margin: "0 0 8px", 
+                  fontSize: isMobile ? 13 : 14, 
+                  fontWeight: 500, 
+                  lineHeight: 1.5, 
+                  color: "#2c3e50" 
+                }}>
                   {insight.text}
                 </p>
-                <p style={{ margin: 0, fontSize: 12, color: "#7f8c8d", fontStyle: "italic" }}>
+                <p style={{ 
+                  margin: 0, 
+                  fontSize: isMobile ? 11 : 12, 
+                  color: "#7f8c8d", 
+                  fontStyle: "italic" 
+                }}>
                   {insight.detail}
                 </p>
                 <div style={{ 
-                  marginTop: 10, display: "inline-block", padding: "2px 8px", borderRadius: 4,
-                  fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5,
-                  background: `${insight.color}15`, color: insight.color,
+                  marginTop: 10, 
+                  display: "inline-block", 
+                  padding: isMobile ? "2px 6px" : "2px 8px", 
+                  borderRadius: 4,
+                  fontSize: isMobile ? 9 : 10, 
+                  fontWeight: 600, 
+                  textTransform: "uppercase", 
+                  letterSpacing: 0.5,
+                  background: `${insight.color}15`, 
+                  color: insight.color,
                 }}>
                   {insight.type.replace("-", " ")}
                 </div>

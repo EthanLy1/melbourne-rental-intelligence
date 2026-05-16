@@ -2,7 +2,7 @@ export const styles = {
   page: {
     width: "100%",
     minHeight: "100vh",
-    padding: "20px",
+    padding: "12px",
     boxSizing: "border-box",
   },
   title: {
@@ -14,18 +14,20 @@ export const styles = {
   },
   buttonContainer: {
     display: "flex",
-    gap: 10,
+    gap: 8,
     flexWrap: "wrap",
     justifyContent: "center",
     marginBottom: 20,
     alignItems: "center",
   },
   button: {
-    padding: "6px 12px",
+    padding: "8px 14px", // larger for touch
     borderRadius: 6,
     border: "1px solid #ccc",
     background: "#f0f0f0",
     cursor: "pointer",
+    fontSize: 13,
+    minHeight: 40, // touch-friendly
   },
   activeButton: {
     background: "#8884d8",
@@ -33,7 +35,7 @@ export const styles = {
   },
   cards: {
     display: "flex",
-    gap: 15,
+    gap: 12,
     marginBottom: 20,
     flexWrap: "wrap",
   },
@@ -43,8 +45,8 @@ export const styles = {
     padding: 12,
     background: "#fff",
     color: "#111",
-    flex: 1,
-    minWidth: 220,
+    flex: "1 1 auto",
+    minWidth: "160px",
   },
   filters: {
     display: "flex",
@@ -54,7 +56,7 @@ export const styles = {
   },
   chartFilters: {
     display: "flex",
-    gap: 15,
+    gap: 12,
     flexWrap: "wrap",
     alignItems: "center",
     marginBottom: 20,
@@ -65,42 +67,57 @@ export const styles = {
     gap: 6,
     background: "#fff",
     color: "#111",
-    padding: "6px 10px",
+    padding: "8px 12px", // larger for touch
     borderRadius: 6,
     border: "1px solid #ddd",
+    minHeight: 40, // touch-friendly
   },
   input: {
-    padding: 8,
+    padding: 10,
     borderRadius: 6,
     border: "1px solid #ccc",
+    fontSize: 14,
+    minHeight: 44, // touch-friendly
   },
   chartWrapper: {
     width: "100%",
     overflowX: "auto",
     marginBottom: 40,
+    WebkitOverflowScrolling: "touch", // smooth scrolling on iOS
   },
   subheading: {
     textAlign: "center",
     marginBottom: 20,
+    fontSize: "clamp(18px, 5vw, 24px)", // responsive font
   },
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-    gap: 15,
+    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+    gap: 12,
   },
   top10Rank: {
-    padding: "10px 16px",
+    padding: "10px 12px",
     color: "#bbb",
     fontSize: 12,
     width: 30,
   },
   th: {
-    padding: "8px 16px",
+    padding: "8px 12px",
     textAlign: "left",
     fontSize: 11,
     color: "#999",
     textTransform: "uppercase",
     letterSpacing: "0.05em",
     fontWeight: 500,
+  },
+  // mobile-specific responsive breakpoints
+  responsiveContainer: {
+    overflowX: "auto",
+    WebkitOverflowScrolling: "touch",
+  },
+  tableWrapper: {
+    overflowX: "auto",
+    WebkitOverflowScrolling: "touch",
+    marginBottom: 16,
   },
 };

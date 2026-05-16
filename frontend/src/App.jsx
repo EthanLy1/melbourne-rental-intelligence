@@ -27,7 +27,7 @@ function useDebounce(value, delay) {
   return debouncedValue;
 }
 
-// navigation header
+// navigation header - mobile friendly
 const NAV_ITEMS = [
   { id: "map", label: "Map", icon: "🗺️" },
   { id: "insights", label: "Insights", icon: "💡" },
@@ -48,8 +48,19 @@ export default function App() {
   const [activeBedType, setActiveBedType] = useState("twoBedFlat");
   const [chartBedTypes, setChartBedTypes] = useState(BED_TYPES.map((b) => b.key));
   const [activeSection, setActiveSection] = useState("insights");
+  const [isMobile, setIsMobile] = useState(false);
   const debouncedSearch = useDebounce(search, 300);
   const debouncedMapSearch = useDebounce(mapSearch, 300);  
+
+  // check if mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // update active section based on scroll
   useEffect(() => {
@@ -72,7 +83,7 @@ export default function App() {
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      const headerHeight = 110;
+      const headerHeight = isMobile ? 140 : 110; // mobile header is taller
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
       window.scrollTo({ top: offsetPosition, behavior: "smooth" });
@@ -104,6 +115,8 @@ export default function App() {
       const regionMatch = region === "All" || rental.Region === region;
       return suburbMatch && regionMatch;
     });
+    
+
     return [...filtered].sort((a, b) => {
       const aVal = sortKey === "Suburb" ? (a.Suburb || "") : (a[sortKey] ?? -Infinity);
       const bVal = sortKey === "Suburb" ? (b.Suburb || "") : (b[sortKey] ?? -Infinity);
@@ -134,7 +147,7 @@ export default function App() {
   return (
     <div style={{ background: "#f5f5f5", minHeight: "100vh", color: "#333" }}>
       
-      {/* sticky header */}
+      {/* sticky header - mobile optimized */}
       <div style={{
         position: "sticky",
         top: 0,
@@ -144,13 +157,13 @@ export default function App() {
         boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
       }}>
         <div style={{
-          padding: "20px 24px 12px 24px",
+          padding: isMobile ? "12px 16px 8px 16px" : "20px 24px 12px 24px",
           borderBottom: "1px solid rgba(255,255,255,0.1)",
           textAlign: "center", 
         }}>
           <h1 style={{
             margin: 0,
-            fontSize: 24,
+            fontSize: isMobile ? 18 : 24,
             fontWeight: 600,
             letterSpacing: "-0.5px",
             color: "white",
@@ -159,23 +172,26 @@ export default function App() {
             Melbourne Rental Intelligence
           </h1>
           <p style={{
-            margin: "6px 0 0",
-            fontSize: 13,
+            margin: "4px 0 0",
+            fontSize: isMobile ? 10 : 13,
             opacity: 0.7,
             color: "rgba(255,255,255,0.8)",
-            textAlign: "center", 
+            textAlign: "center",
+            display: isMobile ? "none" : "block", // hide subtitle on mobile
           }}>
             Comprehensive rental market analytics for Melbourne metropolitan area
           </p>
         </div>
 
+        {/* navigation */}
         <div style={{
-          padding: "0 24px",
+          padding: isMobile ? "0 12px" : "0 24px",
           display: "flex",
-          gap: 4,
+          gap: isMobile ? 2 : 4,
           overflowX: "auto",
           scrollbarWidth: "thin",
-          justifyContent: "center", 
+          WebkitOverflowScrolling: "touch",
+          justifyContent: isMobile ? "flex-start" : "center",
         }}>
           {NAV_ITEMS.map((item) => (
             <button
@@ -184,20 +200,21 @@ export default function App() {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 8,
-                padding: "12px 20px",
+                gap: isMobile ? 4 : 8,
+                padding: isMobile ? "10px 12px" : "12px 20px",
                 border: "none",
                 background: "transparent",
                 color: activeSection === item.id ? "white" : "rgba(255,255,255,0.6)",
-                fontSize: 14,
+                fontSize: isMobile ? 12 : 14,
                 fontWeight: activeSection === item.id ? 600 : 400,
                 cursor: "pointer",
                 borderBottom: activeSection === item.id ? "2px solid #667eea" : "2px solid transparent",
                 transition: "all 0.2s",
                 whiteSpace: "nowrap",
+                minHeight: 44, // touch-friendly
               }}
             >
-              <span style={{ fontSize: 16 }}>{item.icon}</span>
+              <span style={{ fontSize: isMobile ? 14 : 16 }}>{item.icon}</span>
               <span>{item.label}</span>
             </button>
           ))}
@@ -205,21 +222,17 @@ export default function App() {
       </div>
 
       {/* main content */}
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "32px 24px", color: "#333" }}>
+      <div style={{ 
+        maxWidth: 1400, 
+        margin: "0 auto", 
+        padding: isMobile ? "16px 12px" : "32px 24px", 
+        color: "#333" 
+      }}>
         
-        {/* property type filter at top */}
-        <div style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 8,
-          marginBottom: 32,
-          padding: "4px",
-        }}>
-          <span style={{ fontSize: 13, fontWeight: 500, color: "#555", marginRight: 8, alignSelf: "center" }}> </span>
-        </div>
+       
 
-        {/* sections/order */}
-        <section id="map" style={{ marginBottom: 48, scrollMarginTop: 110 }}>
+        {/* sections */}
+        <section id="map" style={{ marginBottom: 40, scrollMarginTop: 110 }}>
           <MapView 
             rentals={rentals} 
             activeBedType={activeBedType} 
@@ -230,42 +243,42 @@ export default function App() {
           />
         </section>
 
-        {/* map summary cards */}
+        {/* summary cards */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: 16,
-          marginBottom: 40,
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(200px, 1fr))",
+          gap: 12,
+          marginBottom: 32,
         }}>
-          <div style={{ background: "white", borderRadius: 12, padding: 20, boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "1px solid #eee" }}>
-            <p style={{ margin: 0, fontSize: 13, color: "#666" }}>💰 Most Expensive</p>
-            <strong style={{ fontSize: 20, color: "#222" }}>{stats.highest?.Suburb || "—"}</strong>
+          <div style={{ background: "white", borderRadius: 12, padding: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "1px solid #eee" }}>
+            <p style={{ margin: 0, fontSize: 13, color: "#666" }}>Most Expensive</p>
+            <strong style={{ fontSize: 18, color: "#222" }}>{stats.highest?.Suburb || "—"}</strong>
             <p style={{ margin: "4px 0 0", fontSize: 18, color: "#667eea", fontWeight: 600 }}>{formatPrice(stats.highest?.[activeBedType])}</p>
           </div>
-          <div style={{ background: "white", borderRadius: 12, padding: 20, boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "1px solid #eee" }}>
-            <p style={{ margin: 0, fontSize: 13, color: "#666" }}>📉 Cheapest</p>
-            <strong style={{ fontSize: 20, color: "#222" }}>{stats.lowest?.Suburb || "—"}</strong>
+          <div style={{ background: "white", borderRadius: 12, padding: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "1px solid #eee" }}>
+            <p style={{ margin: 0, fontSize: 13, color: "#666" }}>Cheapest</p>
+            <strong style={{ fontSize: 18, color: "#222" }}>{stats.lowest?.Suburb || "—"}</strong>
             <p style={{ margin: "4px 0 0", fontSize: 18, color: "#667eea", fontWeight: 600 }}>{formatPrice(stats.lowest?.[activeBedType])}</p>
           </div>
-          <div style={{ background: "white", borderRadius: 12, padding: 20, boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "1px solid #eee" }}>
-            <p style={{ margin: 0, fontSize: 13, color: "#666" }}>📊 Avg {activeLabel}</p>
-            <strong style={{ fontSize: 28, color: "#222" }}>{stats.avg != null ? `$${stats.avg.toFixed(0)}` : "—"}</strong>
+          <div style={{ background: "white", borderRadius: 12, padding: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "1px solid #eee" }}>
+            <p style={{ margin: 0, fontSize: 13, color: "#666" }}>Avg {activeLabel}</p>
+            <strong style={{ fontSize: 24, color: "#222" }}>{stats.avg != null ? `$${stats.avg.toFixed(0)}` : "—"}</strong>
           </div>
         </div>
 
-        <section id="insights" style={{ marginBottom: 48, scrollMarginTop: 110 }}>
+        <section id="insights" style={{ marginBottom: 40, scrollMarginTop: 110 }}>
           <DataInsights rentals={rentals} />
         </section>
 
-        <section id="region-analytics" style={{ marginBottom: 48, scrollMarginTop: 110 }}>
+        <section id="region-analytics" style={{ marginBottom: 40, scrollMarginTop: 110 }}>
           <RegionAnalytics rentals={rentals} />
         </section>
 
-        <section id="additional-charts" style={{ marginBottom: 48, scrollMarginTop: 110 }}>
+        <section id="additional-charts" style={{ marginBottom: 40, scrollMarginTop: 110 }}>
           <AdditionalCharts rentals={rentals} />
         </section>
 
-        <section id="rankings" style={{ marginBottom: 48, scrollMarginTop: 110 }}>
+        <section id="rankings" style={{ marginBottom: 40, scrollMarginTop: 110 }}>
           <Top10Tables rentals={filteredRentals} />
         </section>
 
@@ -288,13 +301,19 @@ export default function App() {
 
         {/* listings */}
         <section id="listings" style={{ scrollMarginTop: 110 }}>
-          <h2 style={{ margin: "0 0 20px 0", fontSize: 20, fontWeight: 600, color: "#222" }}>📋 Detailed Listings ({filteredRentals.length} suburbs)</h2>
+          <h2 style={{ margin: "0 0 16px 0", fontSize: isMobile ? 18 : 20, fontWeight: 600, color: "#222" }}>
+            📋 Detailed Listings ({filteredRentals.length} suburbs)
+          </h2>
           {filteredRentals.length === 0 ? (
             <p style={{ textAlign: "center", color: "#666" }}>No suburbs found.</p>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
+            <div style={{ 
+              display: "grid", 
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(300px, 1fr))", 
+              gap: 12 
+            }}>
               {filteredRentals.map((rental) => (
-                <div key={rental.Suburb} style={{ background: "white", borderRadius: 12, padding: 20, border: "1px solid #eee" }}>
+                <div key={rental.Suburb} style={{ background: "white", borderRadius: 12, padding: 16, border: "1px solid #eee" }}>
                   <h3 style={{ margin: 0, fontSize: 16, color: "#222" }}>{rental.Suburb}</h3>
                   <p style={{ margin: "4px 0 12px", fontSize: 12, color: "#666" }}>{rental.Region}</p>
                   {BED_TYPES.map(({ key, label }) => (
@@ -314,17 +333,18 @@ export default function App() {
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           style={{
             position: "fixed",
-            bottom: 24,
-            right: 24,
-            width: 80,
-            height: 80,
+            bottom: isMobile ? 16 : 24,
+            right: isMobile ? 16 : 24,
+            width: isMobile ? 50 : 80,
+            height: isMobile ? 50 : 80,
             borderRadius: "50%",
             background: "#1a1a2e",
             color: "white",
             border: "none",
-            fontSize: 40,
+            fontSize: isMobile ? 24 : 40,
             cursor: "pointer",
             boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+            zIndex: 999,
           }}
         >
           ↑

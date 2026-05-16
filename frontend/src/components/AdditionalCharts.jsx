@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { PieChart, Pie, Cell, LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Legend } from "recharts";
 import { BED_TYPES, PIE_COLORS, REGION_LINE_COLORS, STACKED_COLORS } from "../config/constants";
 import { styles } from "../styles";
@@ -14,6 +14,17 @@ export default function AdditionalCharts({ rentals }) {
     return initialState;
   });
   const [stackedBedType, setStackedBedType] = useState("twoBedFlat");
+  const [isMobile, setIsMobile] = useState(false);
+
+  // check if mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const regions = useMemo(() => {
     return [...new Set(rentals.map((r) => r.Region).filter(Boolean))].sort();
@@ -197,18 +208,24 @@ export default function AdditionalCharts({ rentals }) {
     }
   };
 
- 
+
 
   return (
     <div style={{ marginBottom: 40 }}>
       <h2 style={styles.subheading}>📈 Additional Analytics</h2>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
+      {/* charts grid - stacks on mobile */}
+      <div style={{ 
+        display: "grid", 
+        gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", 
+        gap: 20, 
+        marginBottom: 20 
+      }}>
         {/* donut chart */}
         <div style={styles.card}>
-          <h3 style={{ margin: "0 0 16px", fontSize: 16 }}>Suburb Distribution by Region</h3>
-          <div style={{ display: "flex", flexDirection: "column", height: "calc(100% - 50px)" }}>
-            <div style={{ width: "100%", height: 350, position: "relative" }}>
+          <h3 style={{ margin: "0 0 16px", fontSize: isMobile ? 14 : 16 }}>Suburb Distribution by Region</h3>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ width: "100%", height: isMobile ? 280 : 350, position: "relative" }}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie 
@@ -221,13 +238,13 @@ export default function AdditionalCharts({ rentals }) {
                       if (parseFloat(percentage) <= 5) return null;
                       return (
                         <text x={x} y={y} textAnchor="middle" dominantBaseline="central"
-                          style={{ fontSize: 11, fontWeight: 600, fill: "black" }}>
+                          style={{ fontSize: isMobile ? 9 : 11, fontWeight: 600, fill: "black" }}>
                           {percentage}%
                         </text>
                       );
                     }}
-                    outerRadius={120}
-                    innerRadius={50}
+                    outerRadius={isMobile ? 90 : 120}
+                    innerRadius={isMobile ? 35 : 50}
                     fill="#8884d8" 
                     dataKey="value"
                   >
@@ -247,8 +264,7 @@ export default function AdditionalCharts({ rentals }) {
             </div>
             {/* donut legend */}
             <div style={{ 
-              maxHeight: 100, 
-              height: 100,
+              maxHeight: isMobile ? 120 : 100, 
               overflowY: "auto", 
               marginTop: 8,
               display: "flex",
@@ -258,7 +274,8 @@ export default function AdditionalCharts({ rentals }) {
               padding: "6px 8px",
               background: "#f8f9fa",
               borderRadius: 8,
-              border: "1px solid #eee"
+              border: "1px solid #eee",
+              WebkitOverflowScrolling: "touch",
             }}>
               {pieData.map((item, index) => {
                 const total = pieData.reduce((sum, d) => sum + d.value, 0);
@@ -268,7 +285,7 @@ export default function AdditionalCharts({ rentals }) {
                     display: "inline-flex", 
                     alignItems: "center", 
                     gap: 4,
-                    fontSize: 12,
+                    fontSize: isMobile ? 10 : 12,
                     padding: "2px 6px",
                     borderRadius: 4,
                     background: "white",
@@ -281,7 +298,7 @@ export default function AdditionalCharts({ rentals }) {
                       background: PIE_COLORS[index % PIE_COLORS.length],
                       flexShrink: 0
                     }} />
-                    <span>{item.name}</span>
+                    <span>{isMobile && item.name.length > 15 ? item.name.substring(0, 12) + "..." : item.name}</span>
                     <span style={{ color: "#667" }}>({percentage.toFixed(0)}%)</span>
                   </div>
                 );
@@ -293,12 +310,14 @@ export default function AdditionalCharts({ rentals }) {
         {/* line chart */}
         <div style={styles.card}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
-            <h3 style={{ margin: 0, fontSize: 16 }}>Median Weekly Rent by Region</h3>
+            <h3 style={{ margin: 0, fontSize: isMobile ? 14 : 16 }}>Median Weekly Rent by Region</h3>
             <button 
               onClick={toggleAllRegions}
               style={{
                 ...styles.button,
                 ...(areAllSelected ? styles.activeButton : {}),
+                minHeight: 40,
+                padding: isMobile ? "6px 12px" : "8px 16px",
               }}
             >
               {areAllSelected ? "✓ All" : "All"}
@@ -306,18 +325,21 @@ export default function AdditionalCharts({ rentals }) {
           </div>
           
           {/* line chart region checkboxes */}
-          <div style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 12,
-            marginBottom: 16,
-            padding: "8px 12px",
-            background: "#f8f9fa",
-            borderRadius: 8,
-            border: "1px solid #eee",
-            maxHeight: 100,
-            overflowY: "auto",
-          }}>
+<div style={{
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 8,
+  marginBottom: 16,
+  padding: "8px 12px",
+  background: "#f8f9fa",
+  borderRadius: 8,
+  border: "1px solid #eee",
+  ...(isMobile && {
+    maxHeight: 100,
+    overflowY: "auto",
+    WebkitOverflowScrolling: "touch",
+  })
+}}>
             {regions.map((region, index) => (
               <label
                 key={region}
@@ -325,12 +347,12 @@ export default function AdditionalCharts({ rentals }) {
                   display: "flex",
                   alignItems: "center",
                   gap: 6,
-                  fontSize: 12,
-                  height: 15,
+                  fontSize: isMobile ? 11 : 12,
                   cursor: "pointer",
-                  padding: "2px 6px",
+                  padding: "4px 8px",
                   borderRadius: 4,
                   background: selectedRegions[region] ? `${REGION_LINE_COLORS[index % REGION_LINE_COLORS.length]}20` : "transparent",
+                  minHeight: 32,
                 }}
               >
                 <input
@@ -349,47 +371,54 @@ export default function AdditionalCharts({ rentals }) {
                     marginRight: 2,
                   }}
                 />
-                {region}
+                {isMobile && region.length > 18 ? region.substring(0, 15) + "..." : region}
               </label>
             ))}
           </div>
 
-          <div style={{ width: "100%", height: 350, minHeight: 350, minWidth: 0 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={lineChartData} margin={{ top: 20, right: 30, left: 10, bottom: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="bedType" 
-                  tick={{ fontSize: 12 }} 
-                  angle={-15} 
-                  textAnchor="end" 
-                  height={50} 
-                />
-                <YAxis 
-                  tickFormatter={(value) => `$${value}`}
-                />
-                <Tooltip 
-                  formatter={(value) => value ? `$${value}` : "No data"} 
-                  labelFormatter={(label) => `${label}`}
-                />
-                <Legend 
-                  wrapperStyle={{ fontSize: 11, maxHeight: 80, overflowY: "auto" }}
-                />
-                {activeRegions.map((region, index) => (
-                  <Line
-                    key={region}
-                    type="monotone"
-                    dataKey={region}
-                    name={region}
-                    stroke={REGION_LINE_COLORS?.[index % REGION_LINE_COLORS?.length] || `hsl(${index * 360 / activeRegions.length}, 70%, 50%)`}
-                    strokeWidth={2}
-                    dot={{ r: 4 }}
-                    activeDot={{ r: 6 }}
-                    connectNulls={false}
+          {/* line chart */}
+          <div style={{ 
+            overflowX: "auto", 
+            WebkitOverflowScrolling: "touch",
+          }}>
+            <div style={{ minWidth: isMobile ? 500 : "100%", height: 350 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={lineChartData} margin={{ top: 20, right: 30, left: 10, bottom: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="bedType" 
+                    tick={{ fontSize: isMobile ? 10 : 12 }} 
+                    angle={isMobile ? -30 : -15} 
+                    textAnchor="end" 
+                    height={50} 
                   />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
+                  <YAxis 
+                    tickFormatter={(value) => `$${value}`}
+                    tick={{ fontSize: isMobile ? 10 : 12 }}
+                  />
+                  <Tooltip 
+                    formatter={(value) => value ? `$${value}` : "No data"} 
+                    labelFormatter={(label) => `${label}`}
+                  />
+                  <Legend 
+                    wrapperStyle={{ fontSize: isMobile ? 10 : 11, maxHeight: 80, overflowY: "auto" }}
+                  />
+                  {activeRegions.map((region, index) => (
+                    <Line
+                      key={region}
+                      type="monotone"
+                      dataKey={region}
+                      name={isMobile && region.length > 15 ? region.substring(0, 12) + "..." : region}
+                      stroke={REGION_LINE_COLORS?.[index % REGION_LINE_COLORS?.length] || `hsl(${index * 360 / activeRegions.length}, 70%, 50%)`}
+                      strokeWidth={2}
+                      dot={{ r: isMobile ? 3 : 4 }}
+                      activeDot={{ r: isMobile ? 5 : 6 }}
+                      connectNulls={false}
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
       </div>
@@ -397,15 +426,15 @@ export default function AdditionalCharts({ rentals }) {
       {/* stacked bar chart */}
       <div style={styles.card}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
-          <h3 style={{ margin: 0, fontSize: 16 }}>
+          <h3 style={{ margin: 0, fontSize: isMobile ? 14 : 16 }}>
             📊 Melbourne Metro Price Distribution by Region for {stackedBedLabel}
           </h3>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 13, color: "#666" }}>Property Type:</span>
+            <span style={{ fontSize: isMobile ? 11 : 13, color: "#666" }}>Type:</span>
             <select
               value={stackedBedType}
               onChange={(e) => setStackedBedType(e.target.value)}
-              style={{ ...styles.input, width: "auto", fontSize: 13 }}
+              style={{ ...styles.input, width: "auto", fontSize: isMobile ? 12 : 13, minHeight: 40 }}
             >
               {BED_TYPES.map(({ key, label }) => (
                 <option key={key} value={key}>{label}</option>
@@ -414,66 +443,74 @@ export default function AdditionalCharts({ rentals }) {
           </div>
         </div>
         
-        <div style={{ marginBottom: 12, fontSize: 12, color: "#666", display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ marginBottom: 12, fontSize: isMobile ? 10 : 12, color: "#666", display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
           <span>🟢 = More affordable</span>
           <span>🔴 = More expensive</span>
           {priceStats && (
             <span style={{ marginLeft: "auto", fontStyle: "italic" }}>
               {stackedBedLabel} — {priceStats.count} suburbs | 
-              Median: ${priceStats.median}/wk | 
-              Range: ${priceStats.min}–${priceStats.max}/wk
+              Median: ${priceStats.median}/wk
             </span>
           )}
         </div>
 
-        
-        
         {stackedBarData.length === 0 ? (
           <p style={{ textAlign: "center", color: "#999", padding: 40 }}>
             No data available for {stackedBedLabel}
           </p>
         ) : (
           <>
-            <div style={{ width: "100%", height: 500, minWidth: 0 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={stackedBarData} margin={{ top: 20, right: 20, left: 10, bottom: 80 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="name" 
-                    angle={-45} 
-                    textAnchor="end" 
-                    interval={0} 
-                    height={100} 
-                    tick={{ fontSize: 12 }} 
-                  />
-                  <YAxis tickFormatter={(value) => `${value}%`} />
-                  <Tooltip 
-                    formatter={(value, name) => [`${value}%`, name]}
-                    labelFormatter={(label) => `📍 ${label}`}
-                    contentStyle={{ backgroundColor: "white", border: "1px solid #ddd", borderRadius: 6 }}
-                  />
-                  {stackedBarData[0] && Object.keys(stackedBarData[0])
-                    .filter(key => key !== "name" && key.toLowerCase() !== "total")
-                    .map((key, index) => (
-                      <Bar 
-                        key={key} 
-                        dataKey={key} 
-                        stackId="a" 
-                        fill={STACKED_COLORS[index % STACKED_COLORS.length]} 
-                        name={key}
-                    
-                      />
-                    ))
-                  }
-                </BarChart>
-              </ResponsiveContainer>
+            {/* stacked bar chart */}
+            <div style={{ 
+              overflowX: "auto", 
+              WebkitOverflowScrolling: "touch",
+            }}>
+              <div style={{ minWidth: isMobile ? 600 : "100%", height: 500 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={stackedBarData} margin={{ top: 20, right: 20, left: 10, bottom: 80 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="name" 
+                      angle={-45} 
+                      textAnchor="end" 
+                      interval={0} 
+                      height={100} 
+                      tick={{ fontSize: isMobile ? 9 : 12 }} 
+                    />
+                    <YAxis 
+                    domain={[0, 100]} 
+                    tickFormatter={(value) => `${value}%`} 
+                    tick={{ fontSize: isMobile ? 10 : 12 }} 
+                    padding={{ top: 0, bottom: 0 }}
+                    ticks={[0, 20, 40, 60, 80, 100]}
+                    />
+                    <Tooltip 
+                      formatter={(value, name) => [`${value}%`, name]}
+                      labelFormatter={(label) => `📍 ${label}`}
+                      contentStyle={{ backgroundColor: "white", border: "1px solid #ddd", borderRadius: 6 }}
+                    />
+                    {stackedBarData[0] && Object.keys(stackedBarData[0])
+                      .filter(key => key !== "name" && key.toLowerCase() !== "total")
+                      .map((key, index) => (
+                        <Bar 
+                          key={key} 
+                          dataKey={key} 
+                          stackId="a" 
+                          fill={STACKED_COLORS[index % STACKED_COLORS.length]} 
+                          name={key}
+                        />
+                      ))
+                    }
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
             {/* stacked bar chart legend */}
             <div style={{ 
               marginTop: 16, 
               display: "flex",
               flexWrap: "wrap",
-              gap: 16,
+              gap: isMobile ? 8 : 16,
               justifyContent: "center",
               alignItems: "center"
             }}>
@@ -482,12 +519,14 @@ export default function AdditionalCharts({ rentals }) {
                 .map((key, index) => (
                   <div key={key} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <div style={{ 
-                      width: 14, 
-                      height: 14, 
+                      width: 12, 
+                      height: 12, 
                       background: STACKED_COLORS[index % STACKED_COLORS.length],
                       borderRadius: 3
                     }} />
-                    <span style={{ fontSize: 11, color: "#333" }}>{key}</span>
+                    <span style={{ fontSize: isMobile ? 9 : 11, color: "#333" }}>
+                      {isMobile && key.length > 20 ? key.substring(0, 18) + "..." : key}
+                    </span>
                   </div>
                 ))
               }
