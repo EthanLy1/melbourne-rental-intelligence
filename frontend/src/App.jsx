@@ -147,11 +147,12 @@ export default function App() {
   return (
     <div style={{ background: "#f5f5f5", minHeight: "100vh", color: "#333" }}>
       
-      {/* sticky header - mobile optimized */}
+      {/* sticky header */}
       <div style={{
         position: "sticky",
         top: 0,
-        zIndex: 1000,
+        zIndex: 99999,
+        isolation: "isolate",
         background: "#1a1a2e",
         color: "white",
         boxShadow: "0 2px 10px rgba(0,0,0,0.1)",

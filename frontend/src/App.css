@@ -1,3 +1,14 @@
+.leaflet-container {
+  z-index: 1 !important;
+}
+
+.leaflet-control {
+  z-index: 1 !important;
+}
+
+.leaflet-pane {
+  z-index: 1 !important;
+}
 .counter {
   font-size: 16px;
   padding: 5px 10px;
