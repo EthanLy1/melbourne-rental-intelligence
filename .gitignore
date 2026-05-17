@@ -7,7 +7,7 @@ __pycache__/
 venv/
 env/
 ENV/
-.venv
+.venv/
 pip-log.txt
 pip-delete-this-directory.txt
 
@@ -40,9 +40,7 @@ Thumbs.db
 .pytest_cache/
 .coverage
 htmlcov/
-
-# Backend
-backend/__pycache__/
+.python-version
 
 # Frontend
 frontend/node_modules/
@@ -52,16 +50,18 @@ frontend/.vite/
 frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
+frontend/.cache/
+frontend/.eslintcache
 
 # Logs
 *.log
 logs/
 
 # OS generated files
-.DS_Store
 .DS_Store?
 ._*
 .Spotlight-V100
 .Trashes
 ehthumbs.db
-Thumbs.db
+dist/
+build/
