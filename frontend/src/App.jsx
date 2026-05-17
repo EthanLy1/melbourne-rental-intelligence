@@ -271,22 +271,24 @@ export default function App() {
           <Top10Tables rentals={filteredRentals} />
         </section>
 
-        {/* search and filters chart */}
-        <SearchFilters 
-          search={search}
-          setSearch={setSearch}
-          region={region}
-          setRegion={setRegion}
-          regions={regions}
-          sortKey={sortKey}
-          setSortKey={setSortKey}
-          sortDir={sortDir}
-          setSortDir={setSortDir}
-          chartBedTypes={chartBedTypes}
-          toggleChartBedType={toggleChartBedType}
-          handleSelectAllChartTypes={handleSelectAllChartTypes}
-          filteredRentals={filteredRentals}
-        />
+        {/* search and filters chart - wrap in section with id */}
+        <section id="filters" style={{ marginBottom: 40, scrollMarginTop: 110 }}>
+          <SearchFilters 
+            search={search}
+            setSearch={setSearch}
+            region={region}
+            setRegion={setRegion}
+            regions={regions}
+            sortKey={sortKey}
+            setSortKey={setSortKey}
+            sortDir={sortDir}
+            setSortDir={setSortDir}
+            chartBedTypes={chartBedTypes}
+            toggleChartBedType={toggleChartBedType}
+            handleSelectAllChartTypes={handleSelectAllChartTypes}
+            filteredRentals={filteredRentals}
+          />
+        </section>
 
         {/* listings */}
         <section id="listings" style={{ scrollMarginTop: 110 }}>

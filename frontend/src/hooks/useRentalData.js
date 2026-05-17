@@ -12,13 +12,15 @@ export function useRentalData() {
     const fetchRentals = async () => {
       try {
         const response = await axios.get("http://127.0.0.1:8000/rentals");
-        const cleanedData = response.data.map((rental) => {
-          const parsed = { ...rental };
-          BED_TYPES.forEach(({ key, column }) => {
-            parsed[key] = parseValue(rental[column]);
+        const cleanedData = response.data
+          .filter((rental) => rental.Suburb && rental.Suburb.trim().toLowerCase() !== "total") //trim suburb = total from data cleaning
+          .map((rental) => {
+            const parsed = { ...rental };
+            BED_TYPES.forEach(({ key, column }) => {
+              parsed[key] = parseValue(rental[column]);
+            });
+            return parsed;
           });
-          return parsed;
-        });
         setRentals(cleanedData);
       } catch (err) {
         console.error("Error fetching rentals:", err);
