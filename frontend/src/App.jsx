@@ -1,9 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Legend } from "recharts";
-import { BED_TYPES, BAR_COLORS } from "./config/constants";
+import { BED_TYPES } from "./config/constants";
 import { useRentalData } from "./hooks/useRentalData";
 import { formatPrice } from "./utils/helpers";
-import InsightCard from "./components/InsightCard";
 import DataInsights from "./components/DataInsights";
 import MapView from "./components/MapView";
 import RegionAnalytics from "./components/RegionAnalytics";
