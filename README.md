@@ -1,4 +1,4 @@
-# Melbourne Rental Intelligence ![Logo](./frontend/public/logo.png?raw=true)
+# Melbourne Rental Intelligence <img src="./frontend/public/logo.png" height="32" alt="Logo">
 ![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/Python-3.13-blue)
 ![React](https://img.shields.io/badge/React-19-61dafb)
