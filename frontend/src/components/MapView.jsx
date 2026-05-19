@@ -207,6 +207,7 @@ export default function MapView({ rentals, activeBedType, search, mapSearchValue
           position: "relative" 
         }}>
           <MapContainer 
+            key={suburbsWithCoords.length}
             center={[-37.8, 145.0]} 
             zoom={isMobile ? 9 : 10} 
             style={{ height: "100%", width: "100%" }} 
