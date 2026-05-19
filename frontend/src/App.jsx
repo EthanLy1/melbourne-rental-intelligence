@@ -218,14 +218,14 @@ export default function App() {
         color: "#333" 
       }}>
         
-        {/* sections */}
+        {/* map view */}
         <section id="map" style={{ marginBottom: 40, scrollMarginTop: 110 }}>
           <MapView 
             rentals={rentals} 
             activeBedType={activeBedType} 
             search={debouncedMapSearch} 
             onBedTypeChange={setActiveBedType}
-            mapSearchValue={mapSearch}
+            mapSearchValue={debouncedMapSearch}
             onMapSearchChange={setMapSearch}
           />
         </section>
