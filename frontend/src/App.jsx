@@ -318,27 +318,6 @@ export default function App() {
           )}
         </section>
 
-        {/* back to top button */}
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          style={{
-            position: "fixed",
-            bottom: isMobile ? 16 : 24,
-            right: isMobile ? 16 : 24,
-            width: isMobile ? 50 : 80,
-            height: isMobile ? 50 : 80,
-            borderRadius: "50%",
-            background: "#1a1a2e",
-            color: "white",
-            border: "none",
-            fontSize: isMobile ? 24 : 40,
-            cursor: "pointer",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-            zIndex: 999,
-          }}
-        >
-          ↑
-        </button>
       </div>
     </div>
   );
