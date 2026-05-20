@@ -47,6 +47,7 @@ export default function App() {
   const [chartBedTypes, setChartBedTypes] = useState(BED_TYPES.map((b) => b.key));
   const [isMobile, setIsMobile] = useState(false);
   const debouncedSearch = useDebounce(search, 300);
+  const debouncedMapSearch = useDebounce(mapSearch, 300);
 
   // check if mobile
   useEffect(() => {
@@ -222,7 +223,7 @@ export default function App() {
           <MapView 
             rentals={rentals} 
             activeBedType={activeBedType} 
-            search={mapSearch}  
+            search={debouncedMapSearch} 
             onBedTypeChange={setActiveBedType}
             mapSearchValue={mapSearch}  
             onMapSearchChange={setMapSearch}

@@ -8,7 +8,9 @@
 
 ![Demo Animation](./screenshots/demo.gif)
 
-### Live Demo: ...
+### Live Demo: [Melbourne Rental Intelligence](https://melbourne-rental-intelligence.onrender.com/)
+
+>⚠️ **Note:** First load may take 30-60 seconds as the backend wakes up from inactivity (free tier). Refresh if needed!
 
 This project is an interactive rental-market analytics dashboard for Melbourne. Renters, investors and real estate professionals can explore median rent prices across 119 suburbs through interactive maps, charts, and data-driven insights. 
 
@@ -86,7 +88,8 @@ Built as a portfolio project to demonstrate full-stack development, data visuali
 melbourne-rental-intelligence/
 ├── backend/
 │   ├── database.py          
-│   └── main.py               
+│   ├── main.py      
+│   └── requirements.txt      
 ├── data/
 │   └── clean_rental_data.csv 
 ├── frontend/
@@ -115,7 +118,6 @@ melbourne-rental-intelligence/
 ├── DATA.md
 ├── LICENSE
 ├── README.md
-└── requirements.txt
 ```
 
 ---
