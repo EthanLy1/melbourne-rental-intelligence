@@ -190,10 +190,10 @@ For data source and cleaning details, see [DATA.md](DATA.md)
 
 ## 💡 Future Improvements
 
+- Optimise search bar performance for faster filtering
 - Export visualisations as downloadable reports (PDF/CSV)
-- Implement user accounts with feature to save/favourite custom searches/filters
 - Improve data preprocessing with missing-value imputation strategies
-- Implement React.lazy() for code splitting and faster initial load
+- Implement user accounts with feature to save/favourite custom searches/filters
 
 ---
 
