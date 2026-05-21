@@ -21,13 +21,13 @@ export const styles = {
     alignItems: "center",
   },
   button: {
-    padding: "8px 14px", // larger for touch
+    padding: "8px 14px", 
     borderRadius: 6,
     border: "1px solid #ccc",
     background: "#f0f0f0",
     cursor: "pointer",
     fontSize: 13,
-    minHeight: 40, // touch-friendly
+    minHeight: 40, 
   },
   activeButton: {
     background: "#8884d8",
@@ -67,28 +67,28 @@ export const styles = {
     gap: 6,
     background: "#fff",
     color: "#111",
-    padding: "8px 12px", // larger for touch
+    padding: "8px 12px", 
     borderRadius: 6,
     border: "1px solid #ddd",
-    minHeight: 40, // touch-friendly
+    minHeight: 40, 
   },
   input: {
     padding: 10,
     borderRadius: 6,
     border: "1px solid #ccc",
     fontSize: 14,
-    minHeight: 44, // touch-friendly
+    minHeight: 44, 
   },
   chartWrapper: {
     width: "100%",
     overflowX: "auto",
     marginBottom: 40,
-    WebkitOverflowScrolling: "touch", // smooth scrolling on iOS
+    WebkitOverflowScrolling: "touch", 
   },
   subheading: {
     textAlign: "center",
     marginBottom: 20,
-    fontSize: "clamp(18px, 5vw, 24px)", // responsive font
+    fontSize: "clamp(18px, 5vw, 24px)", 
   },
   grid: {
     display: "grid",

@@ -40,7 +40,6 @@ export default function MapView({ rentals, activeBedType, onBedTypeChange }) {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // memoize percentile ranges
   const percentileRanges = useMemo(() => {
     const validPrices = rentals
       .filter((r) => r[activeBedType] != null && r[activeBedType] !== 0)
@@ -48,7 +47,6 @@ export default function MapView({ rentals, activeBedType, onBedTypeChange }) {
     return calculatePercentiles(validPrices);
   }, [rentals, activeBedType]);
 
-  // precompute icons ONCE per render cycle, not per marker
   const iconCache = useMemo(() => {
     const cache = {};
     rentals.forEach((rental) => {
@@ -248,7 +246,7 @@ export default function MapView({ rentals, activeBedType, onBedTypeChange }) {
             position: "relative",
           }}
         >
-          {/* FIXED: use a stable key so the map doesn't get destroyed on search */}
+  
           <MapContainer
             key="melbourne-map"
             center={[-37.8, 145.0]}

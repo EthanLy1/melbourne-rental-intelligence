@@ -1,7 +1,30 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
-import { PieChart, Pie, Cell, LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
+import { PieChart, Pie, Cell, LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend, LabelList } from "recharts";
 import { BED_TYPES, PIE_COLORS, REGION_LINE_COLORS, STACKED_COLORS } from "../config/constants";
 import { styles } from "../styles";
+
+const TIER_ORDER = ["Budget", "Affordable", "Mid-Range", "Premium", "Luxury"];
+
+const CustomStackedTooltip = ({ active, payload, label }) => {
+  if (!active || !payload || !payload.length) return null;
+
+  const sorted = [...payload].sort((a, b) => {
+    const aIndex = TIER_ORDER.findIndex(t => a.name.startsWith(t));
+    const bIndex = TIER_ORDER.findIndex(t => b.name.startsWith(t));
+    return bIndex - aIndex; 
+  });
+
+  return (
+    <div style={{ backgroundColor: "white", border: "1px solid #ddd", borderRadius: 6, padding: "10px 14px" }}>
+      <p style={{ margin: "0 0 8px", fontWeight: 600 }}>📍 {label}</p>
+      {sorted.map((entry, i) => (
+        <p key={i} style={{ margin: "2px 0", color: entry.fill, fontSize: 13 }}>
+          {entry.name}: {entry.value}%
+        </p>
+      ))}
+    </div>
+  );
+};
 
 export default function AdditionalCharts({ rentals }) {
   const [selectedRegions, setSelectedRegions] = useState(() => {
@@ -13,7 +36,6 @@ export default function AdditionalCharts({ rentals }) {
   const [stackedBedType, setStackedBedType] = useState("twoBedFlat");
   const [isMobile, setIsMobile] = useState(false);
 
-  // chart dimension refs
   const pieRef = useRef(null);
   const lineRef = useRef(null);
   const stackedRef = useRef(null);
@@ -312,16 +334,17 @@ export default function AdditionalCharts({ rentals }) {
         ) : (
           <>
             <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-              <div ref={stackedRef} style={{ height: 500, minHeight: 400, width: "100%" }}>
+              <div ref={stackedRef} style={{ height: 500, minHeight: 400, width: "100%", minWidth: isMobile ? `${stackedBarData.length * 70}px` : "100%" }}>
                 {stackedValid ? (
-                  <BarChart width={stackedDims.width} height={stackedDims.height} data={stackedBarData} margin={{ top: 20, right: 20, left: 10, bottom: 80 }}>
+                  <BarChart width={stackedDims.width} height={stackedDims.height} data={stackedBarData} margin={{ top: 20, right: 20, left: 10, bottom: 80 }} barCategoryGap={isMobile ? "15%" : "20%"}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" angle={-45} textAnchor="end" interval={0} height={100} tick={{ fontSize: isMobile ? 9 : 12 }} />
                     <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} tick={{ fontSize: isMobile ? 10 : 12 }} ticks={[0, 20, 40, 60, 80, 100]} />
-                    <Tooltip formatter={(value, name) => [`${value}%`, name]} labelFormatter={(label) => `📍 ${label}`}
-                      contentStyle={{ backgroundColor: "white", border: "1px solid #ddd", borderRadius: 6 }} />
+                    <Tooltip content={<CustomStackedTooltip />} />
                     {stackedKeys.map((key, index) => (
-                      <Bar key={`bar-${index}`} dataKey={key} stackId="a" fill={STACKED_COLORS[index % STACKED_COLORS.length]} name={key} />
+                      <Bar key={`bar-${index}`} dataKey={key} stackId="a" fill={STACKED_COLORS[index % STACKED_COLORS.length]} name={key}>
+                        <LabelList dataKey={key} position="center" formatter={(value) => (value >= 10 ? `${value}%` : "")} style={{ fontSize: isMobile ? 9 : 11, fill: "black" }} />
+                      </Bar>
                     ))}
                   </BarChart>
                 ) : (

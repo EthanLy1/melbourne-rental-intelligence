@@ -10,28 +10,26 @@ export const formatPrice = (value) => {
 };
 
 export const createColoredIcon = (price, percentileRanges) => {
-  // Determine which percentile bucket this price falls into
-  let colorIndex = 2; // Default to mid-range (yellow)
+  let colorIndex = 2; 
   
   if (price <= percentileRanges.p25) {
-    colorIndex = 0; // Budget - Green
+    colorIndex = 0; 
   } else if (price <= percentileRanges.p50) {
-    colorIndex = 1; // Affordable - Light Green
+    colorIndex = 1; 
   } else if (price <= percentileRanges.p75) {
-    colorIndex = 2; // Mid-Range - Yellow
+    colorIndex = 2; 
   } else if (price <= percentileRanges.p90) {
-    colorIndex = 3; // Premium - Orange
+    colorIndex = 3; 
   } else {
-    colorIndex = 4; // Luxury - Red
+    colorIndex = 4; 
   }
   
-  // Same color scheme as stacked bar chart
   const colors = [
-    "#27ae60", // Green = Budget (bottom 25%)
-    "#82ca9d", // Light green = Affordable (25-50%)
-    "#f1c40f", // Yellow = Mid-range (50-75%)
-    "#e67e22", // Orange = Premium (75-90%)
-    "#e74c3c", // Red = Luxury (top 10%)
+    "#27ae60", 
+    "#82ca9d", 
+    "#f1c40f", 
+    "#e67e22", 
+    "#e74c3c", 
   ];
   
   const color = colors[colorIndex];
@@ -55,7 +53,7 @@ export const createColoredIcon = (price, percentileRanges) => {
   });
 };
 
-// Helper to calculate percentiles for the map
+// helper to calculate percentiles for the map
 export const calculatePercentiles = (prices) => {
   if (prices.length === 0) return { p25: 0, p50: 0, p75: 0, p90: 0 };
   
