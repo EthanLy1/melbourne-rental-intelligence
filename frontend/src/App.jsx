@@ -10,20 +10,6 @@ import SearchFilters from "./components/SearchFilters";
 import Top10Tables from "./components/Top10Tables";
 import LoadingScreen from "./components/LoadingScreen";
 
-// debounce function
-function useDebounce(value, delay) {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-
-  return debouncedValue;
-}
-
 const NAV_ITEMS = [
   { id: "map", label: "Map", icon: "🗺️" },
   { id: "insights", label: "Insights", icon: "💡" },
@@ -35,11 +21,9 @@ const NAV_ITEMS = [
 ];
 
 export default function App() {
-  const { rentals, loading, error } = useRentalData();
-  const [mapSearch, setMapSearch] = useState("");
+  const {rentals, loading, error} = useRentalData();
   const [activeBedType, setActiveBedType] = useState("twoBedFlat");
   const [isMobile, setIsMobile] = useState(false);
-  const debouncedMapSearch = useDebounce(mapSearch, 300);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -188,10 +172,7 @@ export default function App() {
           <MapView
             rentals={rentals}
             activeBedType={activeBedType}
-            search={debouncedMapSearch}
             onBedTypeChange={setActiveBedType}
-            mapSearchValue={mapSearch}
-            onMapSearchChange={setMapSearch}
           />
         </section>
 
