@@ -174,30 +174,6 @@ export default function App() {
           />
         </section>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: 12,
-            marginBottom: 32,
-          }}
-        >
-          <div style={{ background: "white", borderRadius: 12, padding: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "1px solid #eee" }}>
-            <p style={{ margin: 0, fontSize: 13, color: "#666" }}>Most Expensive</p>
-            <strong style={{ fontSize: 18, color: "#222" }}>{stats.highest?.Suburb || "—"}</strong>
-            <p style={{ margin: "4px 0 0", fontSize: 18, color: "#667eea", fontWeight: 600 }}>{formatPrice(stats.highest?.[activeBedType])}</p>
-          </div>
-          <div style={{ background: "white", borderRadius: 12, padding: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "1px solid #eee" }}>
-            <p style={{ margin: 0, fontSize: 13, color: "#666" }}>Cheapest</p>
-            <strong style={{ fontSize: 18, color: "#222" }}>{stats.lowest?.Suburb || "—"}</strong>
-            <p style={{ margin: "4px 0 0", fontSize: 18, color: "#667eea", fontWeight: 600 }}>{formatPrice(stats.lowest?.[activeBedType])}</p>
-          </div>
-          <div style={{ background: "white", borderRadius: 12, padding: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "1px solid #eee" }}>
-            <p style={{ margin: 0, fontSize: 13, color: "#666" }}>Avg {activeLabel}</p>
-            <strong style={{ fontSize: 24, color: "#222" }}>{stats.avg != null ? `$${stats.avg.toFixed(0)}` : "—"}</strong>
-          </div>
-        </div>
-
         <section id="insights" style={{ marginBottom: 40, scrollMarginTop: 110 }}>
           <DataInsights rentals={rentals} />
         </section>

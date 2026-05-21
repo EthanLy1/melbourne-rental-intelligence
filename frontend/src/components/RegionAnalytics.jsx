@@ -66,17 +66,31 @@ export default function RegionAnalytics({ rentals }) {
   }, [rentals]);
 
   const chartData = useMemo(() => {
-    return regionAverages.map((region) => ({
+  return [...regionAverages]
+    .sort((a, b) => (b[activeBed] || 0) - (a[activeBed] || 0))
+    .map((region) => ({
       name: region.region,
       ...BED_TYPES.reduce((acc, { key }) => ({ ...acc, [key]: region[key] || 0 }), {}),
     }));
-  }, [regionAverages]);
+}, [regionAverages, activeBed]);
 
   const getTopRegions = (bedKey, limit = 5) =>
     regionAverages.filter(r => r[bedKey] != null).sort((a, b) => b[bedKey] - a[bedKey]).slice(0, limit);
 
   const getBottomRegions = (bedKey, limit = 5) =>
     regionAverages.filter(r => r[bedKey] != null).sort((a, b) => a[bedKey] - b[bedKey]).slice(0, limit);
+
+  const overallAverage = useMemo(() => {
+  let total = 0, count = 0;
+  rentals.forEach(rental => {
+    const value = parseValue(rental[activeBed]);
+    if (value != null && value !== 0) {
+      total += value;
+      count++;
+    }
+  });
+  return count > 0 ? Math.round(total / count) : null;
+  }, [rentals, activeBed]);
 
   const label = BED_TYPES.find((b) => b.key === activeBed)?.label || "";
   const hasValidDims = chartDims.width > 0 && chartDims.height > 0;
@@ -119,23 +133,24 @@ export default function RegionAnalytics({ rentals }) {
 
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 12, marginBottom: 20 }}>
         <div style={styles.card}>
-          <h3>🏙️ Total Regions</h3>
-          <strong style={{ fontSize: 32, color: "#8884d8" }}>{regionAverages.length}</strong>
-        </div>
-        <div style={styles.card}>
-          <h3>📈 Most Expensive Region</h3>
+          <h3>🏆 Most Expensive Region</h3>
           <p style={{ fontSize: 14, margin: "4px 0" }}>{getTopRegions(activeBed, 1)[0]?.region || "N/A"}</p>
           <strong>{formatPrice(getTopRegions(activeBed, 1)[0]?.[activeBed])}</strong>
         </div>
         <div style={styles.card}>
-          <h3>📉 Most Affordable Region</h3>
+          <h3>💰 Most Affordable Region</h3>
           <p style={{ fontSize: 14, margin: "4px 0" }}>{getBottomRegions(activeBed, 1)[0]?.region || "N/A"}</p>
           <strong>{formatPrice(getBottomRegions(activeBed, 1)[0]?.[activeBed])}</strong>
         </div>
+        <div style={styles.card}>
+          <h3>🏙️ Melbourne Average</h3>
+          <p style={{ fontSize: 14, margin: "4px 0" }}>{label}</p>
+          <strong>{overallAverage ? formatPrice(overallAverage) : "N/A"}</strong>
+        </div>
       </div>
 
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center", marginBottom: 20 }}>
-        <span style={{ ...styles.label, marginRight: 8 }}>View by:</span>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center", alignItems: "center", marginBottom: 20 }}>
+        <span style={{ ...styles.label, marginRight: 8, display: "flex", alignItems: "center" }}>View by:</span>
         {BED_TYPES.map(({ key, label: lbl }) => (
           <button key={key} onClick={() => setActiveBed(key)}
             style={{ ...styles.button, ...(activeBed === key ? styles.activeButton : {}), minHeight: 40 }}>

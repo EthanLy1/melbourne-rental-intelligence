@@ -16,11 +16,27 @@ function useDebounce(value, delay) {
 
 function MapController({ showAll }) {
   const map = useMap();
+  
   useEffect(() => {
+    const centerLat = -37.8136;  
+    const centerLng = 144.9631;  
+    const range = 1.2; 
+    
+    const southWest = L.latLng(centerLat - range, centerLng - range); 
+    const northEast = L.latLng(centerLat + range, centerLng + range); 
+    const bounds = L.latLngBounds(southWest, northEast);
+    
+    map.setMaxBounds(bounds);
+    map.options.maxBoundsViscosity = 1.0;
+    
+    map.setMinZoom(9);
+    map.setMaxZoom(16);
+    
     if (showAll) {
-      map.fitBounds([[-38.5, 144.5], [-37.5, 145.5]], { padding: [50, 50] });
+      map.fitBounds([[-38.1, 144.7], [-37.6, 145.2]], { padding: [50, 50] });
     }
   }, [showAll, map]);
+  
   return null;
 }
 
@@ -220,20 +236,23 @@ export default function MapView({ rentals, activeBedType, onBedTypeChange }) {
               </div>
             </div>
 
+
             <button
-              onClick={() => setShowAllSuburbs(!showAllSuburbs)}
-              style={{
-                ...styles.button,
-                fontSize: isMobile ? 10 : 12,
-                padding: isMobile ? "6px 10px" : "4px 12px",
-                background: showAllSuburbs ? "#8884d8" : "white",
-                color: showAllSuburbs ? "white" : "#333",
-                minHeight: 36,
-                whiteSpace: "nowrap",
-              }}
-            >
-              {showAllSuburbs ? "Zoom to Filtered" : "Show All"}
-            </button>
+  onClick={() => {
+    setShowAllSuburbs(true);
+    setTimeout(() => setShowAllSuburbs(false), 100);
+  }}
+  style={{
+    ...styles.button,
+    fontSize: isMobile ? 10 : 12,
+    padding: isMobile ? "6px 10px" : "4px 12px",
+    minHeight: 36,
+    whiteSpace: "nowrap",
+  }}
+>
+  Show All
+</button>
+
           </div>
         </div>
 
