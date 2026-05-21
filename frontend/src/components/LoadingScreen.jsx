@@ -6,11 +6,14 @@ export default function LoadingScreen({ onLoadComplete }) {
   useEffect(() => {
     let startTime = Date.now();
     let animationFrame;
+    let isMounted = true;
     
     const animateProgress = () => {
       const elapsed = Date.now() - startTime;
-      let newProgress = Math.min(90, Math.pow(elapsed / 3000, 0.5) * 90);
-      setProgress(newProgress);
+      let newProgress = Math.min(90, (elapsed / 3000) * 90);
+      if (isMounted) {
+        setProgress(newProgress);
+      }
       
       if (newProgress < 90) {
         animationFrame = requestAnimationFrame(animateProgress);
@@ -21,10 +24,18 @@ export default function LoadingScreen({ onLoadComplete }) {
     
     const loadData = async () => {
       try {
-        const response = await fetch("/api/rental-data");
-        await response.json();
-        setProgress(100);
-        setTimeout(() => onLoadComplete?.(), 300); 
+        const response = await fetch("http://localhost:8000/rentals");
+        const data = await response.json();
+        console.log("Data loaded:", data);
+        
+        if (isMounted) {
+          setProgress(100);
+          setTimeout(() => {
+            if (isMounted) {
+              onLoadComplete?.(data);
+            }
+          }, 300);
+        }
       } catch (error) {
         console.error("Loading failed:", error);
       }
@@ -33,6 +44,7 @@ export default function LoadingScreen({ onLoadComplete }) {
     loadData();
     
     return () => {
+      isMounted = false;
       if (animationFrame) cancelAnimationFrame(animationFrame);
     };
   }, [onLoadComplete]);
@@ -95,8 +107,8 @@ export default function LoadingScreen({ onLoadComplete }) {
             background: "linear-gradient(90deg, #667eea, #764ba2, #667eea)",
             backgroundSize: "200% 100%",
             borderRadius: 4,
-            transition: "width 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-            animation: progress < 100 ? "shimmer 1.5s infinite" : "none",
+            transition: "width 0.1s linear",
+            animation: progress < 100 && progress > 0 ? "shimmer 1.5s infinite" : "none",
           }}
         />
       </div>
@@ -108,10 +120,10 @@ export default function LoadingScreen({ onLoadComplete }) {
         margin: 0,
         fontVariantNumeric: "tabular-nums",
       }}>
-        {Math.round(progress)}%
+        {Math.floor(progress)}%
       </p>
 
-      <style jsx>{`
+      <style>{`
         @keyframes pulse {
           0%, 100% { opacity: 0.3; }
           50% { opacity: 1; }
