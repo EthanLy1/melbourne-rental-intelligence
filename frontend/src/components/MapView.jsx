@@ -98,23 +98,44 @@ export default function MapView({ rentals, activeBedType, onBedTypeChange }) {
           gap: 12,
         }}
       >
-        <div style={{ flex: 1 }}>
-          <input
-            type="text"
-            placeholder="Search suburbs on map..."
-            value={mapSearchValue}
-            onChange={(e) => setMapSearchValue(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px 12px",
-              border: "1px solid #ddd",
-              borderRadius: 8,
-              fontSize: 14,
-              background: "white",
-              minHeight: 44,
-            }}
-          />
-        </div>
+        <div style={{ flex: 1, position: "relative" }}>
+  <input
+    type="text"
+    placeholder="Search suburbs on map..."
+    value={mapSearchValue}
+    onChange={(e) => setMapSearchValue(e.target.value)}
+    style={{
+      width: "100%",
+      padding: "10px 40px 10px 12px",
+      border: "1px solid #ddd",
+      borderRadius: 8,
+      fontSize: 14,
+      background: "white",
+      minHeight: 44,
+    }}
+  />
+  {mapSearchValue && (
+    <button
+      onClick={() => setMapSearchValue("")}
+      style={{
+        position: "absolute",
+        right: 8,
+        top: "50%",
+        transform: "translateY(-50%)",
+        background: "none",
+        border: "none",
+        fontSize: 18,
+        color: "black",
+        cursor: "pointer",
+        padding: "4px 8px",
+        lineHeight: 1,
+      }}
+      aria-label="Clear search"
+    >
+      ✕
+    </button>
+  )}
+</div>
 
         <div
           style={{

@@ -133,17 +133,45 @@ export default function SearchFilters({
             display: "flex", flexDirection: isMobile ? "column" : "row",
             flexWrap: "wrap", gap: 12, marginBottom: 16,
           }}>
-            <input
-              type="text"
-              placeholder="Search suburb..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{
-                flex: 1, minWidth: isMobile ? "auto" : 200, padding: "10px 12px",
-                border: "1px solid #ddd", borderRadius: 8, fontSize: isMobile ? 13 : 14,
-                color: "#333", background: "white", minHeight: 44,
-              }}
-            />
+                        <div style={{ flex: 1, minWidth: isMobile ? "auto" : 200, position: "relative" }}>
+              <input
+                type="text"
+                placeholder="Search suburb..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px 40px 10px 12px",
+                  border: "1px solid #ddd",
+                  borderRadius: 8,
+                  fontSize: isMobile ? 13 : 14,
+                  color: "#333",
+                  background: "white",
+                  minHeight: 44,
+                }}
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  style={{
+                    position: "absolute",
+                    right: 8,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "none",
+                    border: "none",
+                    fontSize: 18,
+                    color: "#999",
+                    cursor: "pointer",
+                    padding: "4px 8px",
+                    lineHeight: 1,
+                  }}
+                  aria-label="Clear search"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
             <select
               value={region}
               onChange={(e) => setRegion(e.target.value)}
