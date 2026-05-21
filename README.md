@@ -190,7 +190,6 @@ For data source and cleaning details, see [DATA.md](DATA.md)
 
 ## 💡 Future Improvements
 
-- Optimise search bar performance for faster filtering
 - Export visualisations as downloadable reports (PDF/CSV)
 - Improve data preprocessing with missing-value imputation strategies
 - Implement user accounts with feature to save/favourite custom searches/filters

@@ -17,6 +17,7 @@ function useDebounce(value, delay) {
 export default function SearchFilters({
   rentals,
   regions: regionOptions,
+  onFilteredChange,
 }) {
   const [search, setSearch] = useState("");
   const [region, setRegion] = useState("All");
@@ -29,7 +30,6 @@ export default function SearchFilters({
 
   const debouncedSearch = useDebounce(search, 400);
 
-  // check if mobile
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -49,7 +49,6 @@ export default function SearchFilters({
     );
   }, []);
 
-  // filter + sort (debounced)
   const filteredRentals = useMemo(() => {
     const searchLower = debouncedSearch.toLowerCase();
     const filtered = rentals.filter((rental) => {
@@ -67,7 +66,10 @@ export default function SearchFilters({
     });
   }, [rentals, debouncedSearch, region, sortKey, sortDir]);
 
-  // measure container width (only when filteredRentals length changes, not on every keystroke)
+  useEffect(() => {
+    onFilteredChange?.(filteredRentals);
+  }, [filteredRentals, onFilteredChange]);
+
   useEffect(() => {
     const measure = () => {
       if (chartContainerRef.current) {
@@ -89,7 +91,6 @@ export default function SearchFilters({
 
   const hasData = filteredRentals.length > 0;
 
-  // memoize chart to avoid re-renders on unrelated state changes
   const chart = useMemo(() => {
     if (!hasData) {
       return (
@@ -127,13 +128,12 @@ export default function SearchFilters({
       <h2 style={{ ...styles.subheading, fontSize: isMobile ? 18 : 22 }}>🔍 Search &amp; Filter</h2>
 
       <div style={styles.card}>
-        {/* controls */}
         <div style={{ marginBottom: 20 }}>
           <div style={{
             display: "flex", flexDirection: isMobile ? "column" : "row",
             flexWrap: "wrap", gap: 12, marginBottom: 16,
           }}>
-                        <div style={{ flex: 1, minWidth: isMobile ? "auto" : 200, position: "relative" }}>
+            <div style={{ flex: 1, minWidth: isMobile ? "auto" : 200, position: "relative" }}>
               <input
                 type="text"
                 placeholder="Search suburb..."
@@ -195,7 +195,6 @@ export default function SearchFilters({
             </button>
           </div>
 
-          {/* chart filters */}
           <div style={{
             display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center",
             overflowX: isMobile ? "auto" : "visible", WebkitOverflowScrolling: "touch", paddingBottom: isMobile ? 4 : 0,
@@ -221,14 +220,12 @@ export default function SearchFilters({
           </div>
         </div>
 
-        {/* dynamic title */}
         <h3 style={{ margin: "0 0 16px", fontSize: isMobile ? 13 : 16, textAlign: "center", fontWeight: 500 }}>
           Weekly Rent Prices by Suburb — {chartBedTypes.length === BED_TYPES.length
             ? "All Property Types"
             : BED_TYPES.filter(({ key }) => chartBedTypes.includes(key)).map(({ label }) => label).join(", ")}
         </h3>
 
-        {/* chart container */}
         <div
           ref={chartContainerRef}
           style={{ overflowX: "auto", WebkitOverflowScrolling: "touch", width: "100%" }}
@@ -238,7 +235,6 @@ export default function SearchFilters({
           </div>
         </div>
 
-        {/* legend */}
         {chartBedTypes.length > 0 && (
           <div style={{ marginTop: 16, display: "flex", justifyContent: "center", flexWrap: "wrap", gap: isMobile ? 12 : 16, padding: isMobile ? "0 8px" : 0 }}>
             {BED_TYPES.filter(({ key }) => chartBedTypes.includes(key)).map(({ key, label }, index) => (
@@ -250,7 +246,6 @@ export default function SearchFilters({
           </div>
         )}
 
-        {/* results count */}
         <div style={{ marginTop: 12, textAlign: "center", fontSize: isMobile ? 11 : 12, color: "#667", borderTop: "1px solid #eee", paddingTop: 12 }}>
           Showing {filteredRentals.length} suburb{filteredRentals.length !== 1 ? "s" : ""}
         </div>

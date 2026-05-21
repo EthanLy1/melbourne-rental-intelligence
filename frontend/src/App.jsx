@@ -21,9 +21,10 @@ const NAV_ITEMS = [
 ];
 
 export default function App() {
-  const {rentals, loading, error} = useRentalData();
+  const { rentals, loading, error } = useRentalData();
   const [activeBedType, setActiveBedType] = useState("twoBedFlat");
   const [isMobile, setIsMobile] = useState(false);
+  const [filteredRentals, setFilteredRentals] = useState([]);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -51,7 +52,6 @@ export default function App() {
     return ["All", ...new Set(rentals.map((r) => r.Region).filter(Boolean))];
   }, [rentals]);
 
-  // summary stats from all rentals (not filtered)
   const stats = useMemo(() => {
     const valid = rentals.filter((r) => r[activeBedType] != null && r[activeBedType] !== 0);
     if (!valid.length) return { highest: null, lowest: null, avg: null };
@@ -69,12 +69,13 @@ export default function App() {
 
   const activeLabel = BED_TYPES.find((b) => b.key === activeBedType)?.label || "";
 
+  const displayListings = filteredRentals
+
   if (loading) return <LoadingScreen />;
   if (error) return <div style={{ padding: 20, color: "red" }}>{error}</div>;
 
   return (
     <div style={{ background: "#f5f5f5", minHeight: "100vh", color: "#333" }}>
-      {/* sticky header */}
       <div
         style={{
           position: "sticky",
@@ -117,7 +118,6 @@ export default function App() {
           </p>
         </div>
 
-        {/* navigation bar */}
         <div
           style={{
             padding: isMobile ? "0 12px" : "0 24px",
@@ -158,7 +158,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* main content */}
       <div
         style={{
           maxWidth: 1400,
@@ -167,7 +166,6 @@ export default function App() {
           color: "#333",
         }}
       >
-        {/* map view */}
         <section id="map" style={{ marginBottom: 40, scrollMarginTop: 110 }}>
           <MapView
             rentals={rentals}
@@ -176,7 +174,6 @@ export default function App() {
           />
         </section>
 
-        {/* summary cards */}
         <div
           style={{
             display: "grid",
@@ -217,15 +214,17 @@ export default function App() {
           <Top10Tables rentals={rentals} />
         </section>
 
-        {/* search and filters */}
         <section id="filters" style={{ marginBottom: 40, scrollMarginTop: 110 }}>
-          <SearchFilters rentals={rentals} regions={regions} />
+          <SearchFilters
+            rentals={rentals}
+            regions={regions}
+            onFilteredChange={setFilteredRentals}
+          />
         </section>
 
-        {/* listings — shows all rentals since filtering lives in SearchFilters now */}
         <section id="listings" style={{ scrollMarginTop: 110 }}>
           <h2 style={{ margin: "0 0 16px 0", fontSize: isMobile ? 18 : 20, fontWeight: 600, color: "#222" }}>
-            📋 Detailed Listings ({rentals.length} suburbs)
+            📋 Detailed Listings ({displayListings.length} suburbs)
           </h2>
           <div
             style={{
@@ -234,7 +233,7 @@ export default function App() {
               gap: 12,
             }}
           >
-            {rentals.map((rental) => (
+            {displayListings.map((rental) => (
               <div key={rental.Suburb} style={{ background: "white", borderRadius: 12, padding: 16, border: "1px solid #eee" }}>
                 <h3 style={{ margin: 0, fontSize: 16, color: "#222" }}>{rental.Suburb}</h3>
                 <p style={{ margin: "4px 0 12px", fontSize: 12, color: "#666" }}>{rental.Region}</p>
