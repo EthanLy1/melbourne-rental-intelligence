@@ -1,17 +1,41 @@
 import { useState, useEffect } from "react";
 
-export default function LoadingScreen() {
+export default function LoadingScreen({ onLoadComplete }) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 90) return prev; 
-        return prev + Math.random() * 15;
-      });
-    }, 200);
-    return () => clearInterval(interval);
-  }, []);
+    let startTime = Date.now();
+    let animationFrame;
+    
+    const animateProgress = () => {
+      const elapsed = Date.now() - startTime;
+      let newProgress = Math.min(90, Math.pow(elapsed / 3000, 0.5) * 90);
+      setProgress(newProgress);
+      
+      if (newProgress < 90) {
+        animationFrame = requestAnimationFrame(animateProgress);
+      }
+    };
+    
+    animationFrame = requestAnimationFrame(animateProgress);
+    
+    const loadData = async () => {
+      try {
+        const response = await fetch("/api/rental-data");
+        await response.json();
+        setProgress(100);
+        setTimeout(() => onLoadComplete?.(), 300); 
+      } catch (error) {
+        console.error("Loading failed:", error);
+      }
+    };
+    
+    loadData();
+    
+    return () => {
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+    };
+  }, [onLoadComplete]);
 
   return (
     <div
@@ -21,35 +45,82 @@ export default function LoadingScreen() {
         justifyContent: "center",
         alignItems: "center",
         minHeight: "100vh",
-        background: "#1a1a2e",
-        gap: 20,
+        background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
+        padding: "0 24px",
       }}
+      role="progressbar"
+      aria-valuenow={Math.round(progress)}
+      aria-valuemin={0}
+      aria-valuemax={100}
     >
-      <h2 style={{ color: "white", fontSize: 20, fontWeight: 500, margin: 0 }}>
-        Loading Melbourne Rental Data
+      <h2 style={{ 
+        color: "white", 
+        fontSize: "clamp(20px, 5vw, 28px)", 
+        fontWeight: 600, 
+        margin: "0 0 12px 0",
+        textAlign: "center",
+        letterSpacing: "-0.3px"
+      }}>
+        Melbourne Rental Data
       </h2>
+      
+      <p style={{ 
+        color: "rgba(255,255,255,0.7)", 
+        fontSize: "clamp(12px, 4vw, 14px)", 
+        margin: "0 0 48px 0",
+        textAlign: "center"
+      }}>
+        Loading market insights
+        <span style={{ animation: "pulse 1.4s infinite" }}>.</span>
+        <span style={{ animation: "pulse 1.4s infinite 0.2s" }}>.</span>
+        <span style={{ animation: "pulse 1.4s infinite 0.4s" }}>.</span>
+      </p>
+      
       <div
         style={{
-          width: 280,
-          height: 6,
-          background: "rgba(255,255,255,0.15)",
-          borderRadius: 3,
+          width: "100%",
+          maxWidth: 320,
+          height: 8,
+          background: "rgba(255,255,255,0.1)",
+          borderRadius: 4,
           overflow: "hidden",
+          marginBottom: 16,
+          boxShadow: "inset 0 1px 2px rgba(0,0,0,0.1)",
         }}
       >
         <div
           style={{
-            width: `${Math.min(progress, 100)}%`,
+            width: `${progress}%`,
             height: "100%",
-            background: "linear-gradient(90deg, #667eea, #764ba2)",
-            borderRadius: 3,
-            transition: "width 0.2s ease",
+            background: "linear-gradient(90deg, #667eea, #764ba2, #667eea)",
+            backgroundSize: "200% 100%",
+            borderRadius: 4,
+            transition: "width 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+            animation: progress < 100 ? "shimmer 1.5s infinite" : "none",
           }}
         />
       </div>
-      <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>
+      
+      <p style={{ 
+        color: "rgba(255,255,255,0.5)", 
+        fontSize: 13, 
+        fontWeight: 500,
+        margin: 0,
+        fontVariantNumeric: "tabular-nums",
+      }}>
         {Math.round(progress)}%
       </p>
+
+      <style jsx>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 1; }
+        }
+        @keyframes shimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+      `}</style>
     </div>
   );
 }
