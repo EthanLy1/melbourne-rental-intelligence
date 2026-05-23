@@ -15,73 +15,53 @@ This project is an interactive rental-market analytics dashboard for Melbourne. 
 
 ---
 
-## 🔍 Overview
+## Overview
 
-- A full-stack rental analytics dashboard that visualises median weekly rent across Melbourne's metropolitan area. It replaces manual suburb-by-suburb comparison with a single interactive interface for exploring affordability, pricing hotspots, and regional market trends.
-- Useful for renters searching for affordable suburbs, property investors tracking market trends, and real estate professionals needing quick regional comparisons to guide their decisions.
-
-Built as a portfolio project to demonstrate full-stack development, data visualisation, and analytics skills using real-world rental data. The project transforms raw dataset into interactive visual insights that make Melbourne’s rental market easier to explore and understand.
+If I wanted to explore rental prices, I would have to manually search suburb after suburb across multiple listings sites. I wanted a single interface to explore affordability hotspots, and regional trends — so I built a dashboard that does exactly that. This project transforms raw dataset into interactive visual insights that make Melbourne’s rental market easier to explore and understand.
 
 ---
 
-## ✨ Features
+## Features
 
-- Interactive Melbourne rental map with price-based clustering
-- Rule-based smart insights detecting anomalies in rental pricing
-- Region-level analytics for comparing affordability across regions
-- Top 10 suburb rankings (expensive vs affordable)
-- Advanced filtering with search, sort, suburb, region, and property type
-- Property-type comparison visualisations
-- Responsive dashboard design
-
----
-
-## 🚀 What Makes This Project Unique
-
-- Combines geospatial mapping (Leaflet) with statistical analytics (Pandas + Recharts)
-- Generates automated market insights instead of just displaying raw data
-- Provides multi-level analysis: suburb → region → state-wide trends
-- Fully interactive dashboard replacing traditional static rental reports
+- An interactive rental map that visualises affordability hotspots with searching and filtering. 
+- Rule-based smart insights that detect anomalies in rental pricing. 
+- Region analytics that display cheapest, expensive, and average visualisations. 
+- Trends that show price and suburb distribution with filtering. 
+- Top 10 suburb rankings (expensive vs affordable). 
+- Searching, filtering, and sorting suburbs connected with detailed listings below.
 
 ---
 
-## 🧱 Tech Stack
+## Technologies
 
-**Frontend**
-- React 19
-- Vite
-- Recharts
-- React-Leaflet / Leaflet
-- Axios 
-- Custom CSS-in-JS styling
+#### Core Stack
+- Frontend: React, Vite
+- Backend: Python, FastAPI, PostgreSQL, SQLAlchemy
+- Data Processing: Pandas
 
-**Backend**
-- Python
-- FastAPI
-- PostgreSQL
-- SQLAlchemy (ORM)
-
-**Visualisation / Tools**
-- Recharts
-- Leaflet / React-Leaflet
-- CSS-in-JS
-- Custom percentile coloring
-
-**Data Processing (Notebook-only)**
-- Pandas
+#### Key Libraries
+- Mapping & Charts: Leaflet, Recharts
+- Styling: CSS-in-JS
+- Data Fetching: Axios
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
-- FastAPI backend serves processed rental data via REST API
-- React frontend consumes API and renders interactive visualisations
-- Data is cleaned and transformed using Pandas before exposure
-- Leaflet + Recharts handle geospatial and statistical rendering
+**Data engineering:** Loaded raw Excel data from the Victorian Government. Cleaned and transformed it with Pandas.
+
+**Database:** Set up PostgreSQL database on pgAdmin4 locally.
+
+**API Development:** Had FastAPI backend that provides database via RESTful API.
+
+**Frontend implementation:** Built React dashboard with reusable chart components (Recharts) and interactive map (Leaflet), dynamic filters and responsive layout.
+
+**Deployment:** Used Render to deploy FastAPI backend and React frontend. Database hosted on Neon.
+
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 melbourne-rental-intelligence/
@@ -153,41 +133,41 @@ DATABASE_URL=postgresql://user:password@localhost:5432/melbourne_rentals
 
 ---
 
-## 📊 Data Intelligence & Insights
+## 📊 Data & Insights
+
+Inner Melbourne is 42% more expensive than Outer Western Melbourne for a 2-bedroom flat — $672/wk vs $475/wk average.
+
+The most affordable suburb for a 2-bed flat is Melton at $365/wk, while Fitzroy sits at $750/wk for the same property type — a $385/wk difference.
+
+At the top end, a 4-bedroom house in Toorak costs $1,875/wk — nearly 4x the $470/wk median in Melton for the same property type.
 
 For data source and cleaning details, see [DATA.md](DATA.md)
-
-- Detects suburbs significantly above/below market average (20%+ anomalies)
-- Compares regional premiums and affordability pockets across Melbourne
-- Generates automated insights about market trends and price variances
-- Visualises price distributions from budget to luxury using percentile-based coloring
-- Tracks median rent trends across 5 property types and 9 regions
 
 ---
 
 ## 📸 Screenshots
 
-### Interactive Rental Map
+#### Rental Map:
 ![Interactive Map](./screenshots/map.png)
 
-### Smart Insights
+### Smart Insights:
 ![Smart Insights](./screenshots/insights.png)
 
-### Additional Analytics
+### Additional Analytics:
 ![Additional Analytics](./screenshots/additional.png)
 
-### Rankings Tables
+### Rankings Tables:
 ![Rankings Tables](./screenshots/rankings.png)
 
-### Search & Filter
+### Search & Filter:
 ![Search & Filter](./screenshots/search.png)
 
-### Mobile View
+### Mobile View:
 ![Mobile View](./screenshots/mobile.png)
 
 ---
 
-## 💡 Future Improvements
+## Future Improvements
 
 - Export visualisations as downloadable reports (PDF/CSV)
 - Improve data preprocessing with missing-value imputation strategies
@@ -195,13 +175,13 @@ For data source and cleaning details, see [DATA.md](DATA.md)
 
 ---
 
-## 📌 Notes
+## Notes
 
-I built this as a portfolio project to demonstrate full-stack data visualisation skills, and end-to-end development skills. From data cleaning and analysis, to building an intuitive, insight-driven dashboard that uses real-world rental data.
+I built this as a portfolio project to demonstrate full-stack data visualisation skills. From data cleaning and analysis, to building an intuitive, insight-driven dashboard that uses real-world rental data.
 
 ---
 
-## 📜 License
+## License
 
 This project is licensed under the MIT License. You are free to use, modify, and distribute this code for personal or commercial purposes, provided you include the original copyright notice.
 
