@@ -23,7 +23,7 @@ If I wanted to explore rental prices, I would have to manually search suburb aft
 
 ## Features
 
-- An interactive rental map that visualises affordability hotspots with searching and filtering. 
+- Interactive rental map that visualises affordability hotspots with searching and filtering. 
 - Rule-based smart insights that detect anomalies in rental pricing. 
 - Region analytics that display cheapest, expensive, and average visualisations. 
 - Trends that show price and suburb distribution with filtering. 
@@ -169,9 +169,11 @@ For data source and cleaning details, see [DATA.md](DATA.md)
 
 ## Future Improvements
 
-- Export visualisations as downloadable reports (PDF/CSV)
-- Improve data preprocessing with missing-value imputation strategies
-- Implement user accounts with feature to save/favourite custom searches/filters
+Export visualisations as downloadable reports (PDF/CSV)
+
+Improve data preprocessing with missing-value imputation strategies
+
+Implement user accounts with feature to save/favourite custom searches/filters
 
 ---
 
