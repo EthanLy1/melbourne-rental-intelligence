@@ -147,7 +147,7 @@ For data source and cleaning details, see [DATA.md](DATA.md)
 
 ## 📸 Screenshots
 
-#### Rental Map:
+### Rental Map:
 ![Interactive Map](./screenshots/map.png)
 
 ### Smart Insights:
