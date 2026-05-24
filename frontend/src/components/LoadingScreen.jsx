@@ -14,7 +14,7 @@ export default function LoadingScreen() {
       }}
     >
       <h2 style={{ color: "white", fontSize: 20, fontWeight: 500, margin: 0 }}>
-        Loading Melbourne Rental Data
+        Loading Melbourne Rental Data...
       </h2>
       
       <div

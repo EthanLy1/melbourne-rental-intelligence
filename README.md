@@ -24,25 +24,28 @@ If I wanted to explore rental prices, I would have to manually search suburb aft
 ## Features
 
 - Interactive rental map that visualises affordability hotspots with searching and filtering. 
-- Rule-based smart insights that detect anomalies in rental pricing. 
+- Rule-based smart insights that detect anomalies in rental pricing, with data statements. 
 - Region analytics that display cheapest, expensive, and average visualisations. 
 - Trends that show price and suburb distribution with filtering. 
 - Top 10 suburb rankings (expensive vs affordable). 
-- Searching, filtering, and sorting suburbs connected with detailed listings below.
+- Searching, filtering, and sorting suburbs.
+- Detailed listings with search and pin feature, as well as price category colour indicators.
 
 ---
 
 ## Technologies
 
-#### Core Stack
-- Frontend: React, Vite
-- Backend: Python, FastAPI, PostgreSQL, SQLAlchemy
-- Data Processing: Pandas
+**Frontend:** React, Vite
 
-#### Key Libraries
-- Mapping & Charts: Leaflet, Recharts
-- Styling: CSS-in-JS
-- Data Fetching: Axios
+**Backend:** Python, FastAPI, PostgreSQL, SQLAlchemy
+
+**Data Processing:** Pandas
+
+**Mapping & Charts:** Leaflet, Recharts
+
+**Styling: CSS-in-JS**
+
+**Data Fetching: Axios**
 
 ---
 
@@ -52,7 +55,7 @@ If I wanted to explore rental prices, I would have to manually search suburb aft
 
 **Database:** Set up PostgreSQL database on pgAdmin4 locally.
 
-**API Development:** Had FastAPI backend that provides database via RESTful API.
+**API Development:** Built a FastAPI backend serving rental data via a RESTful API.
 
 **Frontend implementation:** Built React dashboard with reusable chart components (Recharts) and interactive map (Leaflet), dynamic filters and responsive layout.
 
@@ -133,13 +136,13 @@ DATABASE_URL=postgresql://user:password@localhost:5432/melbourne_rentals
 
 ---
 
-## 📊 Data & Insights
+## Data & Insights
 
-Inner Melbourne is 42% more expensive than Outer Western Melbourne for a 2-bedroom flat — $672/wk vs $475/wk average.
+📊 4-bedroom houses show the widest price range in Melbourne, from $470/wk in Melton to $1,875/wk in Toorak, a 300% difference driven purely by location.
 
-The most affordable suburb for a 2-bed flat is Melton at $365/wk, while Fitzroy sits at $750/wk for the same property type — a $385/wk difference.
+🗺️ South Eastern Melbourne is 45% cheaper than Inner Melbourne for a 3-bedroom house ($835/wk vs $1,005/wk), saving renters $455/week or nearly $23,676/year.
 
-At the top end, a 4-bedroom house in Toorak costs $1,875/wk — nearly 4x the $470/wk median in Melton for the same property type.
+📈 At $1,875/wk, Toorak 4-bedroom houses sit 104% above the Melbourne average of $918, signalling premium demand, limited supply, and suburb desirability.
 
 For data source and cleaning details, see [DATA.md](DATA.md)
 
@@ -148,38 +151,40 @@ For data source and cleaning details, see [DATA.md](DATA.md)
 ## 📸 Screenshots
 
 ### Rental Map:
-![Interactive Map](./screenshots/map.png)
+![map](./screenshots/map.png)
 
 ### Smart Insights:
-![Smart Insights](./screenshots/insights.png)
+![insights](./screenshots/insights.png)
 
-### Additional Analytics:
-![Additional Analytics](./screenshots/additional.png)
-
-### Rankings Tables:
-![Rankings Tables](./screenshots/rankings.png)
+### Region Analytics:
+![region](./screenshots/region.png)
 
 ### Search & Filter:
-![Search & Filter](./screenshots/search.png)
+![search](./screenshots/search.png)
+
+### Detailed Listings:
+![listings](./screenshots/listings.png)
 
 ### Mobile View:
-![Mobile View](./screenshots/mobile.png)
+![mobile](./screenshots/mobile.png)
 
 ---
 
 ## Future Improvements
 
-Export visualisations as downloadable reports (PDF/CSV)
+- Export visualisations as downloadable reports (PDF/CSV)
 
-Improve data preprocessing with missing-value imputation strategies
+- Improve data preprocessing with missing-value imputation strategies
 
-Implement user accounts with feature to save/favourite custom searches/filters
+- Implement user accounts with feature to save/favourite custom searches/filters
 
 ---
 
 ## Notes
 
 I built this as a portfolio project to demonstrate full-stack data visualisation skills. From data cleaning and analysis, to building an intuitive, insight-driven dashboard that uses real-world rental data.
+
+Some suburbs and property type combinations display "No data" where the source dataset contained missing or blank values. Rather than imputing or estimating figures, I chose to represent these gaps honestly to keep the data genuine.
 
 ---
 
