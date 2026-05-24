@@ -9,6 +9,7 @@ import AdditionalCharts from "./components/AdditionalCharts";
 import SearchFilters from "./components/SearchFilters";
 import Top10Tables from "./components/Top10Tables";
 import LoadingScreen from "./components/LoadingScreen";
+import DetailedListings from "./components/DetailedListings"; 
 
 const NAV_ITEMS = [
   { id: "map", label: "Map", icon: "🗺️" },
@@ -17,14 +18,13 @@ const NAV_ITEMS = [
   { id: "additional-charts", label: "Trends", icon: "📈" },
   { id: "rankings", label: "Rankings", icon: "🏆" },
   { id: "filters", label: "Search", icon: "🔍" },
-  { id: "listings", label: "Listings", icon: "📋" },
+  { id: "listings", label: "Listings", icon: "📌" },
 ];
 
 export default function App() {
   const { rentals, loading, error } = useRentalData();
   const [activeBedType, setActiveBedType] = useState("twoBedFlat");
   const [isMobile, setIsMobile] = useState(false);
-  const [filteredRentals, setFilteredRentals] = useState([]);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -69,7 +69,6 @@ export default function App() {
 
   const activeLabel = BED_TYPES.find((b) => b.key === activeBedType)?.label || "";
 
-  const displayListings = filteredRentals
 
   if (loading) return <LoadingScreen />;
   if (error) return <div style={{ padding: 20, color: "red" }}>{error}</div>;
@@ -194,35 +193,10 @@ export default function App() {
           <SearchFilters
             rentals={rentals}
             regions={regions}
-            onFilteredChange={setFilteredRentals}
           />
         </section>
 
-        <section id="listings" style={{ scrollMarginTop: 110 }}>
-          <h2 style={{ margin: "0 0 16px 0", fontSize: isMobile ? 18 : 20, fontWeight: 600, color: "#222" }}>
-            📋 Detailed Listings ({displayListings.length} suburbs)
-          </h2>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(300px, 1fr))",
-              gap: 12,
-            }}
-          >
-            {displayListings.map((rental) => (
-              <div key={rental.Suburb} style={{ background: "white", borderRadius: 12, padding: 16, border: "1px solid #eee" }}>
-                <h3 style={{ margin: 0, fontSize: 16, color: "#222" }}>{rental.Suburb}</h3>
-                <p style={{ margin: "4px 0 12px", fontSize: 12, color: "#666" }}>{rental.Region}</p>
-                {BED_TYPES.map(({ key, label }) => (
-                  <p key={key} style={{ margin: 4, fontSize: 13, display: "flex", justifyContent: "space-between", color: "#333" }}>
-                    <span style={{ color: "#666" }}>{label}:</span>
-                    <strong style={{ color: "#222" }}>{formatPrice(rental[key])}</strong>
-                  </p>
-                ))}
-              </div>
-            ))}
-          </div>
-        </section>
+        <DetailedListings listings={rentals} isMobile={isMobile} />
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ export const parseValue = (value) => {
 };
 
 export const formatPrice = (value) => {
-  return value != null && value !== 0 ? `$${value}` : "No data available";
+  return value != null && value !== 0 ? `$${value}` : "No data";
 };
 
 export const createColoredIcon = (price, percentileRanges) => {
