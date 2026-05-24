@@ -50,9 +50,9 @@ export default function DataInsights({ rentals }) {
           type: "above-average",
           icon: "📈",
           color: "#c0392b",
-          text: `${top.suburb} ${label.toLowerCase()} rents are ${Math.round(top.percentAbove)}% above the state average`,
+          text: `${top.suburb} ${label.toLowerCase()} rents are ${Math.round(top.percentAbove)}% above the Melbourne average`,
           detail: `$${top.value} vs $${Math.round(avg)} average`,
-          insight: `Based on ${label.toLowerCase()} listings. At $${top.value}/week, ${top.suburb} commands a ${Math.round(top.percentAbove)}% premium over the state average — this signals strong demand, premium amenities, or limited supply in the area.`
+          insight: `Based on ${label.toLowerCase()} listings. At $${top.value}/week, ${top.suburb} commands a ${Math.round(top.percentAbove)}% premium over the Melbourne average — this signals strong demand, premium amenities, or limited supply in the area.`
         });
       }
     });
@@ -73,13 +73,14 @@ export default function DataInsights({ rentals }) {
 
       if (belowAverage.length > 0 && belowAverage[0].percentBelow > 38) {
         const top = belowAverage[0];
+        const weeklySaving = Math.round(avg - top.value);
         allInsights.push({
           type: "below-average",
           icon: "📉",
           color: "#27ae60",
-          text: `${top.suburb} ${label.toLowerCase()} rents are ${Math.round(top.percentBelow)}% below the state average`,
+          text: `${top.suburb} ${label.toLowerCase()} rents are ${Math.round(top.percentBelow)}% below the Melbourne average`,
           detail: `$${top.value} vs $${Math.round(avg)} average`,
-          insight: `Based on ${label.toLowerCase()} listings, ${top.suburb} offers genuine affordability at $${top.value}/week. That's a saving of $${Math.round(avg - top.value)}/week — nearly $${Math.round((avg - top.value) * 52).toLocaleString()}/year — making it an attractive option for budget-conscious renters.`
+          insight: `Based on ${label.toLowerCase()} listings, ${top.suburb} offers genuine affordability at $${top.value}/week. That's a saving of $${weeklySaving}/week — nearly $${(weeklySaving * 52).toLocaleString()}/year — making it an attractive option for budget-conscious renters.`
         });
       }
     });
@@ -166,8 +167,7 @@ export default function DataInsights({ rentals }) {
         color: "#e67e22",
         text: `${widestRange.label} shows the widest price range across Melbourne`,
         detail: `From $${widestRange.min} to $${widestRange.max}`,
-        insight: `Across ${widestRange.label.toLowerCase()} listings, prices span a $${widestRange.range}/week range. This ${Math.round((widestRange.range / ((widestRange.min + widestRange.max) / 2)) * 100)}% spread shows significant variation in quality and location — meaning smart shopping could save you thousands.`
-      });
+        insight: `Across ${widestRange.label.toLowerCase()} listings, prices span a $${widestRange.range}/week range. Prices at the top end are ${Math.round((widestRange.range / widestRange.min) * 100)}% higher than the cheapest listings — showing significant variation in quality and location, meaning smart shopping could save you thousands.`      });
     }
 
     // 6. price jump
