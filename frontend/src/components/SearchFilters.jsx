@@ -28,7 +28,7 @@ export default function SearchFilters({
   const [containerWidth, setContainerWidth] = useState(0);
   const chartContainerRef = useRef(null);
 
-  const debouncedSearch = useDebounce(search, 400);
+  const debouncedSearch = useDebounce(search, 300);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);

@@ -1,20 +1,30 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { BED_TYPES, STACKED_COLORS } from "../config/constants";
 import { formatPrice } from "../utils/helpers";
 import { styles } from "../styles";
 
-// Same order & colour mapping as the stacked bar chart
 const TIER_ORDER = ["Budget", "Affordable", "Mid-Range", "Premium", "Luxury"];
 const CATEGORY_COLORS = Object.fromEntries(
   TIER_ORDER.map((tier, i) => [tier, STACKED_COLORS[i]])
 );
 
+function useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
+}
+
 export default function DetailedListings({ listings, isMobile }) {
   const [search, setSearch] = useState("");
   const [pinnedSuburbs, setPinnedSuburbs] = useState([]);
-  const [hoveredSuburb, setHoveredSuburb] = useState(null);
+  const [draggedPin, setDraggedPin] = useState(null);
+  const [dragOverPin, setDragOverPin] = useState(null);
 
-  // Pre-compute thresholds once per bed type so cards don't recalculate repeatedly
+  const debouncedSearch = useDebounce(search, 300);
+
   const thresholds = useMemo(() => {
     const result = {};
     BED_TYPES.forEach(({ key }) => {
@@ -37,7 +47,6 @@ export default function DetailedListings({ listings, isMobile }) {
     return result;
   }, [listings]);
 
-  // Classify a price using pre-computed thresholds
   const classify = (price, bedKey) => {
     if (price == null || price === 0) return null;
     const t = thresholds[bedKey];
@@ -59,18 +68,69 @@ export default function DetailedListings({ listings, isMobile }) {
 
   const clearAllPins = () => setPinnedSuburbs([]);
 
+  const handleDragStart = (e, suburb) => {
+    setDraggedPin(suburb);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", suburb);
+  };
+
+  const handleDragOver = (e, suburb) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (suburb !== draggedPin) {
+      setDragOverPin(suburb);
+    }
+  };
+
+  const handleDragLeave = () => {
+    setDragOverPin(null);
+  };
+
+  const handleDrop = (e, targetSuburb) => {
+    e.preventDefault();
+    setDragOverPin(null);
+
+    if (draggedPin === targetSuburb) {
+      setDraggedPin(null);
+      return;
+    }
+
+    setPinnedSuburbs((prev) => {
+      const newPins = [...prev];
+      const draggedIndex = newPins.indexOf(draggedPin);
+      const targetIndex = newPins.indexOf(targetSuburb);
+
+      if (draggedIndex === -1 || targetIndex === -1) return prev;
+
+      newPins.splice(draggedIndex, 1);
+      newPins.splice(targetIndex, 0, draggedPin);
+      return newPins;
+    });
+
+    setDraggedPin(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedPin(null);
+    setDragOverPin(null);
+  };
+
   const filteredListings = useMemo(() => {
     const sorted = [...listings].sort((a, b) => {
       const aPinned = pinnedSuburbs.includes(a.Suburb);
       const bPinned = pinnedSuburbs.includes(b.Suburb);
+
+      if (aPinned && bPinned) {
+        return pinnedSuburbs.indexOf(a.Suburb) - pinnedSuburbs.indexOf(b.Suburb);
+      }
       if (aPinned && !bPinned) return -1;
       if (!aPinned && bPinned) return 1;
       return 0;
     });
 
-    if (!search.trim()) return sorted;
+    if (!debouncedSearch.trim()) return sorted;
 
-    const searchLower = search.toLowerCase();
+    const searchLower = debouncedSearch.toLowerCase();
     return sorted.filter((rental) => {
       if (pinnedSuburbs.includes(rental.Suburb)) return true;
       return (
@@ -78,7 +138,7 @@ export default function DetailedListings({ listings, isMobile }) {
         rental.Region?.toLowerCase().includes(searchLower)
       );
     });
-  }, [listings, search, pinnedSuburbs]);
+  }, [listings, debouncedSearch, pinnedSuburbs]);
 
   const cardsPerRow = isMobile
     ? 1
@@ -93,7 +153,6 @@ export default function DetailedListings({ listings, isMobile }) {
       </h2>
 
       <div style={styles.card}>
-        {/* Search bar */}
         <div style={{ marginBottom: 20 }}>
           <div style={{ position: "relative", width: "100%" }}>
             <input
@@ -139,6 +198,9 @@ export default function DetailedListings({ listings, isMobile }) {
               <span style={{ fontSize: 12, color: "#667" }}>
                 📌 {pinnedSuburbs.length} suburb{pinnedSuburbs.length !== 1 ? "s" : ""} pinned
               </span>
+              <span style={{ fontSize: 11, color: "#999" }}>
+                (drag to reorder)
+              </span>
               <button
                 onClick={clearAllPins}
                 style={{
@@ -173,37 +235,65 @@ export default function DetailedListings({ listings, isMobile }) {
             >
               {filteredListings.map((rental) => {
                 const isPinned = pinnedSuburbs.includes(rental.Suburb);
-                const isHovered = hoveredSuburb === rental.Suburb;
+                const isDragging = draggedPin === rental.Suburb;
+                const isDragOver = dragOverPin === rental.Suburb;
                 return (
                   <div
                     key={rental.Suburb}
+                    draggable={isPinned}
                     style={{
                       background: "white",
                       borderRadius: 12,
                       padding: 16,
-                      border: isPinned ? "2px solid #667eea" : "1px solid #eee",
+                      border: isDragOver ? "2px dashed #667eea" : isPinned ? "2px solid #667eea" : "1px solid #eee",
                       position: "relative",
-                      cursor: "pointer",
-                      transition: "all 0.2s ease",
-                      transform: isHovered ? "translateY(-2px)" : "translateY(0)",
-                      boxShadow: isHovered
-                        ? "0 8px 25px rgba(0,0,0,0.1)"
-                        : "0 1px 3px rgba(0,0,0,0.05)",
+                      cursor: isPinned ? "grab" : "pointer",
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                      opacity: isDragging ? 0.5 : 1,
+                      boxShadow: isDragOver
+                        ? "0 0 0 3px rgba(102,126,234,0.2)"
+                        : "0 2px 8px rgba(0,0,0,0.1)",
                     }}
                     onClick={() => togglePin(rental.Suburb)}
-                    onMouseEnter={() => setHoveredSuburb(rental.Suburb)}
-                    onMouseLeave={() => setHoveredSuburb(null)}
+                    onMouseEnter={(e) => {
+                      if (!isMobile && !isDragging) {
+                        e.currentTarget.style.transform = "translateY(-7px)";
+                        e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.15)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isMobile) {
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
+                      }
+                    }}
+                    onDragStart={(e) => handleDragStart(e, rental.Suburb)}
+                    onDragOver={(e) => isPinned && handleDragOver(e, rental.Suburb)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => isPinned && handleDrop(e, rental.Suburb)}
+                    onDragEnd={handleDragEnd}
                   >
+                    {isPinned && (
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: 8,
+                          left: 8,
+                          fontSize: 11,
+                          color: "#999",
+                        }}
+                      >
+                        ⠿
+                      </span>
+                    )}
                     <span
                       style={{
                         position: "absolute",
                         top: 12,
                         right: 12,
                         fontSize: 18,
-                        opacity: isPinned ? 1 : isHovered ? 0.6 : 0.25,
+                        opacity: isPinned ? 1 : 0.25,
                         filter: isPinned ? "none" : "grayscale(1)",
-                        transition: "all 0.2s ease",
-                        transform: isHovered && !isPinned ? "scale(1.2)" : "scale(1)",
                       }}
                     >
                       📌
@@ -213,9 +303,9 @@ export default function DetailedListings({ listings, isMobile }) {
                       style={{
                         margin: 0,
                         fontSize: 16,
-                        color: isHovered ? "#667eea" : "#222",
+                        color: "#222",
                         paddingRight: 30,
-                        transition: "color 0.2s ease",
+                        paddingLeft: isPinned ? 20 : 0,
                       }}
                     >
                       {rental.Suburb}
@@ -243,12 +333,7 @@ export default function DetailedListings({ listings, isMobile }) {
                         >
                           <span style={{ color: "grey" }}>{label}:</span>
                           <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <strong
-                              style={{
-                                color: isHovered ? "#667eea" : "#222",
-                                transition: "color 0.2s ease",
-                              }}
-                            >
+                            <strong style={{ color: "#222" }}>
                               {formatPrice(price)}
                             </strong>
                             {category && (
@@ -259,7 +344,6 @@ export default function DetailedListings({ listings, isMobile }) {
                                   borderRadius: "50%",
                                   background: categoryColor,
                                   flexShrink: 0,
-                                  display: "inline-block",
                                 }}
                               />
                             )}

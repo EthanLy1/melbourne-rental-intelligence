@@ -43,9 +43,9 @@ export default function MapView({ rentals, activeBedType, onBedTypeChange }) {
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
-  const debouncedMapSearch = useDebounce(mapSearchValue, 400);
-  const debouncedMinPrice = useDebounce(minPrice, 400);
-  const debouncedMaxPrice = useDebounce(maxPrice, 400);
+  const debouncedMapSearch = useDebounce(mapSearchValue, 300);
+  const debouncedMinPrice = useDebounce(minPrice, 300);
+  const debouncedMaxPrice = useDebounce(maxPrice, 300);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
