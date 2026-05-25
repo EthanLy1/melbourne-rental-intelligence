@@ -11,13 +11,11 @@
 
 >⚠️ **Note:** First load may take 15-30 seconds as the backend wakes up from inactivity (free tier). Refresh if needed!
 
-This project is an interactive rental-market analytics dashboard for Melbourne. Renters, investors and real estate professionals can explore median rent prices across 119 suburbs through interactive maps, charts, and data-driven insights. 
-
 ---
 
 ## Overview
 
-If I wanted to explore rental prices, I would have to manually search suburb after suburb across multiple listings sites. I wanted a single interface to explore affordability hotspots, and regional trends — so I built a dashboard that does exactly that. This project transforms raw dataset into interactive visual insights that make Melbourne’s rental market easier to explore and understand.
+If I wanted to explore rental prices, I would have to manually search suburb after suburb across multiple listings sites. I wanted a single interface to explore affordability hotspots, and regional trends — so I built a dashboard that does exactly that. **Melbourne Rental Intelligence**. A full-stack analytics dashboard that visualises median weekly rent across Melbourne using interactive maps, dynamic charts, and suburb-level analysis.
 
 ---
 
@@ -79,6 +77,7 @@ melbourne-rental-intelligence/
 │   │   ├── components/        
 │   │   │   ├── AdditionalCharts.jsx
 │   │   │   ├── DataInsights.jsx
+│   │   │   ├── DetailedListings.jsx
 │   │   │   ├── MapView.jsx
 │   │   │   ├── RegionAnalytics.jsx
 │   │   │   ├── SearchFilters.jsx
