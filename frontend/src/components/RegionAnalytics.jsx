@@ -226,10 +226,12 @@ export default function RegionAnalytics({ rentals }) {
                   width={isMobile ? 58 : 60}
                 />
                 <Tooltip 
+                  isAnimationActive={false}
                   formatter={(value) => value != null && value !== 0 ? `$${value}` : "No data"}
                   contentStyle={{ fontSize: isMobile ? 11 : 13 }}
                 />
                 <Bar 
+                  isAnimationActive={false}
                   dataKey={activeBed} 
                   name={label} 
                   fill="#8884d8" 

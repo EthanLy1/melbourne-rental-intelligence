@@ -201,6 +201,7 @@ export default function AdditionalCharts({ rentals }) {
               {pieValid ? (
                 <PieChart width={pieDims.width} height={pieDims.height}>
                   <Pie
+                    isAnimationActive={false}
                     data={pieData} cx="50%" cy="50%" labelLine={false} outerRadius={isMobile ? 90 : 120}
                     innerRadius={isMobile ? 35 : 50} fill="#8884d8" dataKey="value"
                     label={({ percent, x, y }) => {
@@ -221,7 +222,7 @@ export default function AdditionalCharts({ rentals }) {
                   <Tooltip formatter={(value, name) => {
                     const total = pieData.reduce((sum, d) => sum + d.value, 0);
                     return [`${value} suburbs (${((value / total) * 100).toFixed(1)}%)`, name];
-                  }} />
+                  }} isAnimationActive={false}/>
                 </PieChart>
               ) : (
                 <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#999" }}>
@@ -285,10 +286,10 @@ export default function AdditionalCharts({ rentals }) {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="bedType" tick={{ fontSize: isMobile ? 10 : 12 }} angle={isMobile ? -30 : -15} textAnchor="end" height={50} />
                   <YAxis tickFormatter={(value) => `$${value}`} tick={{ fontSize: isMobile ? 10 : 12 }} />
-                  <Tooltip formatter={(value) => value ? `$${value}` : "No data"} />
+                  <Tooltip formatter={(value) => value ? `$${value}` : "No data"} isAnimationActive={false} />
                   <Legend wrapperStyle={{ fontSize: isMobile ? 10 : 11, maxHeight: 80, overflowY: "auto" }} />
                   {activeRegions.map((region, index) => (
-                    <Line key={region} type="monotone" dataKey={region}
+                    <Line key={region} type="monotone" dataKey={region} isAnimationActive={false}
                       name={isMobile && region.length > 15 ? region.substring(0, 12) + "..." : region}
                       stroke={REGION_LINE_COLORS?.[index % REGION_LINE_COLORS?.length] || `hsl(${index * 360 / activeRegions.length}, 70%, 50%)`}
                       strokeWidth={2} dot={{ r: isMobile ? 3 : 4 }} activeDot={{ r: isMobile ? 5 : 6 }} connectNulls={false} />
@@ -340,9 +341,9 @@ export default function AdditionalCharts({ rentals }) {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" angle={-45} textAnchor="end" interval={0} height={100} tick={{ fontSize: isMobile ? 9 : 12 }} />
                     <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} tick={{ fontSize: isMobile ? 10 : 12 }} ticks={[0, 20, 40, 60, 80, 100]} />
-                    <Tooltip content={<CustomStackedTooltip />} />
+                    <Tooltip content={<CustomStackedTooltip/>} isAnimationActive={false} />
                     {stackedKeys.map((key, index) => (
-                      <Bar key={`bar-${index}`} dataKey={key} stackId="a" fill={STACKED_COLORS[index % STACKED_COLORS.length]} name={key}>
+                      <Bar key={`bar-${index}`} dataKey={key} stackId="a" fill={STACKED_COLORS[index % STACKED_COLORS.length]} name={key} isAnimationActive={false}>
                         <LabelList dataKey={key} position="center" formatter={(value) => (value >= 10 ? `${value}%` : "")} style={{ fontSize: isMobile ? 9 : 11, fill: "black" }} />
                       </Bar>
                     ))}

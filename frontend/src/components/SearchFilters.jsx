@@ -115,9 +115,9 @@ export default function SearchFilters({
         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
         <XAxis dataKey="Suburb" angle={-45} textAnchor="end" interval={0} height={isMobile ? 90 : 110} tick={{ fontSize: isMobile ? 9 : 11, fill: "#555" }} />
         <YAxis tickFormatter={(value) => `$${value}`} tick={{ fontSize: isMobile ? 10 : 12 }} width={isMobile ? 50 : 60} />
-        <Tooltip formatter={(value) => value != null && value !== 0 ? `$${value}` : "No data"} contentStyle={{ backgroundColor: "white", color: "#333", border: "1px solid #ddd", fontSize: isMobile ? 11 : 12 }} />
+        <Tooltip formatter={(value) => value != null && value !== 0 ? `$${value}` : "No data"} contentStyle={{ backgroundColor: "white", color: "#333", border: "1px solid #ddd", fontSize: isMobile ? 11 : 12 }} isAnimationActive={false}/>
         {activeTypes.map(({ key, label }, index) => (
-          <Bar key={key} dataKey={key} name={label} fill={BAR_COLORS[index]} />
+          <Bar key={key} dataKey={key} name={label} fill={BAR_COLORS[index]} isAnimationActive={false}/>
         ))}
       </BarChart>
     );
@@ -199,7 +199,7 @@ export default function SearchFilters({
             display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center",
             overflowX: isMobile ? "auto" : "visible", WebkitOverflowScrolling: "touch", paddingBottom: isMobile ? 4 : 0,
           }}>
-            <span style={{ fontSize: isMobile ? 12 : 13, color: "#555", flexShrink: 0 }}>Chart Filters:</span>
+            <span style={{ fontSize: isMobile ? 12 : 13, color: "#555", flexShrink: 0 }}>View by:</span>
             <button
               onClick={handleSelectAllChartTypes}
               style={{
