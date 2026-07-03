@@ -189,6 +189,11 @@ Some suburbs and property type combinations display "No data" where the source d
 
 ## License
 
-This project is licensed under the MIT License. You are free to use, modify, and distribute this code for personal or commercial purposes, provided you include the original copyright notice.
+This project is proprietary and intended for portfolio viewing only.
+
+© 2026 Ethan Ly. All rights reserved.
+
+No permission is granted to use, copy, modify, distribute, or sublicense
+this code in any form without prior written consent from the author.
 
 See the [LICENSE](LICENSE) file for full details.
